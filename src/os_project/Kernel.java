@@ -4,7 +4,7 @@ public class Kernel {
 	private Scheduler scheduler;
 	
 	//unsure
-	public static int createProcess(UserlandProcess up) {
-		scheduler.createProcess();
+	public int createProcess(UserlandProcess up) {
+		return scheduler.createProcess(up);
 	}
 }

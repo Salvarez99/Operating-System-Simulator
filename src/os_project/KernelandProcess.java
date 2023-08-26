@@ -5,19 +5,23 @@ public class KernelandProcess {
 	private static int nextpid = 0;
 	private int pid = 0; //maybe?
 	boolean hasStarted;
-	Thread thread;
+	private Thread thread;
 	
 	//When do I start the thread?
 	/*
 	 * Do I start it in the constructor? or the KernalLandProcess()?
 	 */
 	
-	
+	//Do we need a constructor?
 	public KernelandProcess(){
 		pid = 0;
 		hasStarted = false;
 		thread = new Thread();
 		nextpid = pid++;
+	}
+	
+	public int getThreadPid() {
+		return pid;
 	}
 	
 	public void KernelLandProcess(UserlandProcess up) {
@@ -49,6 +53,12 @@ public class KernelandProcess {
 			//or?
 			thread.start();
 		}
+		
+		if (!isDone()) {
+			
+		}
+		
+		
 	}
 	
 }

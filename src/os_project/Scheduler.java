@@ -13,30 +13,68 @@ public class Scheduler {
 
 		@Override
 		public void run() {
-			// TODO Auto-generated method stub
 			scheduler.switchProcess();
 			
 		}
 		
 	}
 	
-	
+	private Interrupt interrupt;
 	
 	
 	
 	public Scheduler() {
 		//schedule interrupt using timer class
-		timer.schedule(null, 250, 250);
+		//Don't think this is right, what is the TimerTask parameter supposed to be?
+		timer.schedule(interrupt, 250, 250);
 	}
 	
 	//unsure
 	public int createProcess(UserlandProcess up) {
+		/*
+		 * Construct a kernelandProcess
+		 * Add it to the end of the list
+		 * if no process is running 
+		 * 	Call switchProcess()
+		 * 	return pid of new process
+		 * 
+		 */
 		
-		return 0;
+		//How do we initialize the new process?
+		KernelandProcess newKernelProcess = null;
+		kernelandProcessList.add(newKernelProcess);
+		
+		if (true) {
+			switchProcess();
+			return kernelandProcess.getThreadPid();
+		}
+		
+		return kernelandProcess.getThreadPid();
 	}
 	
 	//unsure
 	public void switchProcess() {
+		
+		/*
+		 * If the process is running (how do we check if the process is running?)
+		 * 	Stop the process
+		 * 	If process is not done
+		 * 		Add process to the end of the list
+		 * 
+		 * Set current process equal to 0 index of process list
+		 * call run on the process
+		 */
+		
+		if (true) {
+			
+			kernelandProcess.stop();
+			if (!kernelandProcess.isDone()) {
+				kernelandProcessList.add(kernelandProcess);
+			}
+			
+			kernelandProcess = kernelandProcessList.getFirst();
+			kernelandProcess.run();
+		}
 		
 	}
 	
