@@ -7,10 +7,18 @@ public class Scheduler {
 	private LinkedList<KernelandProcess> kernelandProcessList = new LinkedList<>();
 	private Timer timer;
 	private KernelandProcess kernelandProcess;
-	private Scheduler scheduler;
+//	private Scheduler scheduler;
 	
 	private class Interrupt extends TimerTask{
 
+		//scheduler init here
+		private Scheduler scheduler; 
+		
+		public Interrupt(Scheduler scheduler) {
+			this.scheduler = scheduler;
+			
+		}
+		
 		@Override
 		public void run() {
 			scheduler.switchProcess();
@@ -22,14 +30,18 @@ public class Scheduler {
 	private Interrupt interrupt;
 	
 	
-	
+	//edited
 	public Scheduler() {
 		//schedule interrupt using timer class
 		//Don't think this is right, what is the TimerTask parameter supposed to be?
+		
+		// interrupt init
+		interrupt = new Interrupt(this);
+		timer = new Timer();
 		timer.schedule(interrupt, 250, 250);
 	}
 	
-	//unsure
+	//edited
 	public int createProcess(UserlandProcess up) {
 		/*
 		 * Construct a kernelandProcess
@@ -41,10 +53,10 @@ public class Scheduler {
 		 */
 		
 		//How do we initialize the new process?
-		KernelandProcess newKernelProcess = null;
-		kernelandProcessList.add(newKernelProcess);
+		kernelandProcess = new KernelandProcess(up);
+		kernelandProcessList.add(kernelandProcess);
 		
-		if (true) {
+		if (!kernelandProcess.isHasStarted()) { //no running processes
 			switchProcess();
 			return kernelandProcess.getThreadPid();
 		}
@@ -52,7 +64,7 @@ public class Scheduler {
 		return kernelandProcess.getThreadPid();
 	}
 	
-	//unsure
+	//edited
 	public void switchProcess() {
 		
 		/*
@@ -65,16 +77,16 @@ public class Scheduler {
 		 * call run on the process
 		 */
 		
-		if (true) {
+		if (!kernelandProcess.isDone() && kernelandProcess.isHasStarted()) {
 			
 			kernelandProcess.stop();
 			if (!kernelandProcess.isDone()) {
 				kernelandProcessList.add(kernelandProcess);
 			}
 			
-			kernelandProcess = kernelandProcessList.getFirst();
-			kernelandProcess.run();
 		}
+		kernelandProcess = kernelandProcessList.remove();
+		kernelandProcess.run();
 		
 	}
 	

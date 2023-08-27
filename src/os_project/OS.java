@@ -6,6 +6,8 @@ public class OS { //supposed to be static
 	
 	//unsure
 	public static void startUp(UserlandProcess init) {
+		
+		kernel = new Kernel();
 		//populate kernel with new instance and call createProcess on "init"
 		kernel.createProcess(init);
 	}

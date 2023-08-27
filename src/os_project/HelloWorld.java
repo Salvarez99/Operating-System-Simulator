@@ -3,7 +3,6 @@ package os_project;
 public class HelloWorld extends UserlandProcess{
 
 	public HelloWorld() {
-		run();
 	}
 	
 	@Override

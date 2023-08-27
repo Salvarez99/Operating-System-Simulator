@@ -3,7 +3,7 @@ package os_project;
 public class KernelandProcess {
 
 	private static int nextpid = 0;
-	private int pid = 0; //maybe?
+	private int pid;
 	boolean hasStarted;
 	private Thread thread;
 	
@@ -11,30 +11,22 @@ public class KernelandProcess {
 	/*
 	 * Do I start it in the constructor? or the KernalLandProcess()?
 	 */
-	
-	//Do we need a constructor?
-	public KernelandProcess(){
-		pid = 0;
-		hasStarted = false;
-		thread = new Thread();
+	public KernelandProcess(UserlandProcess up) {
+		pid = nextpid;
 		nextpid = pid++;
+		hasStarted = false;
+		thread = new Thread(up);
 	}
+	
 	
 	public int getThreadPid() {
 		return pid;
 	}
 	
-	public void KernelLandProcess(UserlandProcess up) {
-		thread = new Thread();
-		pid++;
-		nextpid++;
-		
-	}
 	
 	public void stop() {
 		if (thread.isAlive()) {
-			thread.stop();
-			hasStarted = false;
+			thread.suspend(); //NOT STOP SUSPEND. B I TCH
 		}
 	}
 	
@@ -46,16 +38,22 @@ public class KernelandProcess {
 		return false;
 	}
 	
+	
+	
+	public boolean isHasStarted() {
+		return hasStarted;
+	}
+
 	//unsure
+	/*
+	 * resume or start, update started
+	 */
 	public void run() {
-		if (!thread.isAlive()) {
-			thread.resume();
-			//or?
+		if (!isHasStarted()) {
 			thread.start();
-		}
-		
-		if (!isDone()) {
-			
+			hasStarted = true;
+		}else if(thread.getState() == Thread.State.WAITING) {
+			thread.resume();
 		}
 		
 		

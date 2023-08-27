@@ -1,7 +1,11 @@
 package os_project;
 
 public class Kernel {
-	private Scheduler scheduler;
+	private Scheduler scheduler = new Scheduler();
+	
+	public Kernel() {
+		
+	}
 	
 	//unsure
 	public int createProcess(UserlandProcess up) {
