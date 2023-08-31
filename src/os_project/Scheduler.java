@@ -7,11 +7,9 @@ public class Scheduler {
 	private LinkedList<KernelandProcess> kernelandProcessList = new LinkedList<>();
 	private Timer timer;
 	private KernelandProcess kernelandProcess;
-//	private Scheduler scheduler;
 	
 	private class Interrupt extends TimerTask{
 
-		//scheduler init here
 		private Scheduler scheduler; 
 		
 		public Interrupt(Scheduler scheduler) {
@@ -30,52 +28,40 @@ public class Scheduler {
 	private Interrupt interrupt;
 	
 	
-	//edited
 	public Scheduler() {
-		//schedule interrupt using timer class
-		//Don't think this is right, what is the TimerTask parameter supposed to be?
-		
-		// interrupt init
+	
 		interrupt = new Interrupt(this);
 		timer = new Timer();
 		timer.schedule(interrupt, 250, 250);
 	}
 	
-	//edited
+	/*
+	 * Constructs a new KernelandProcess, adds it to the processList. Checks if no process is running
+	 * if no, call switchProcess()
+	 * @Param UserlandProcess up
+	 * @Return int newProcessPid
+	 */
 	public int createProcess(UserlandProcess up) {
-		/*
-		 * Construct a kernelandProcess
-		 * Add it to the end of the list
-		 * if no process is running 
-		 * 	Call switchProcess()
-		 * 	return pid of new process
-		 * 
-		 */
 		
-		//How do we initialize the new process?
 		kernelandProcess = new KernelandProcess(up);
 		kernelandProcessList.add(kernelandProcess);
 		
 		if (!kernelandProcess.isHasStarted()) { //no running processes
 			switchProcess();
+			System.out.println("Process Pid" + kernelandProcess.getThreadPid());
 			return kernelandProcess.getThreadPid();
 		}
 		
+		System.out.println("Process Pid" + kernelandProcess.getThreadPid());
 		return kernelandProcess.getThreadPid();
 	}
 	
-	//edited
+	
+	/*
+	 * Check if process is running. If yes, stop the process and add to process to end of list.
+	 * Then set current process to first process in the process list, run the process.  
+	 */
 	public void switchProcess() {
-		
-		/*
-		 * If the process is running (how do we check if the process is running?)
-		 * 	Stop the process
-		 * 	If process is not done
-		 * 		Add process to the end of the list
-		 * 
-		 * Set current process equal to 0 index of process list
-		 * call run on the process
-		 */
 		
 		if (!kernelandProcess.isDone() && kernelandProcess.isHasStarted()) {
 			
@@ -83,13 +69,9 @@ public class Scheduler {
 			if (!kernelandProcess.isDone()) {
 				kernelandProcessList.add(kernelandProcess);
 			}
-			
 		}
 		kernelandProcess = kernelandProcessList.remove();
 		kernelandProcess.run();
 		
 	}
-	
-	
-	
 }

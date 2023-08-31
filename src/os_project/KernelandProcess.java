@@ -3,14 +3,11 @@ package os_project;
 public class KernelandProcess {
 
 	private static int nextpid = 0;
-	private int pid;
-	boolean hasStarted;
+	private static int pid;
+	private boolean hasStarted;
 	private Thread thread;
 	
-	//When do I start the thread?
-	/*
-	 * Do I start it in the constructor? or the KernalLandProcess()?
-	 */
+
 	public KernelandProcess(UserlandProcess up) {
 		pid = nextpid;
 		nextpid = pid++;
@@ -18,19 +15,27 @@ public class KernelandProcess {
 		thread = new Thread(up);
 	}
 	
-	
+	/*
+	 * Retrieves pid
+	 * @Return int pid
+	 */
 	public int getThreadPid() {
 		return pid;
 	}
 	
-	
+	/*
+	 * Check if current process is alive. If yes, suspends the current process
+	 */
 	public void stop() {
 		if (thread.isAlive()) {
-			thread.suspend(); //NOT STOP SUSPEND. B I TCH
+			thread.suspend();
 		}
 	}
 	
-	//unsure
+	/*
+	 * Checks if the current process hasStart and isAlive. If yes, returns true otherwise returns false
+	 * @Return boolean
+	 */
 	public boolean isDone() {
 		if (hasStarted && !thread.isAlive()) {
 			return true;
@@ -39,14 +44,18 @@ public class KernelandProcess {
 	}
 	
 	
-	
+	/*
+	 * Retrieves hasStarted
+	 * @Return boolean hasStarted
+	 */
 	public boolean isHasStarted() {
 		return hasStarted;
 	}
 
-	//unsure
 	/*
 	 * resume or start, update started
+	 * Check if the current thread has not started. If true, start the thread otherwise check if the 
+	 * current thread is waiting. If true, resume the thread
 	 */
 	public void run() {
 		if (!isHasStarted()) {
@@ -55,8 +64,5 @@ public class KernelandProcess {
 		}else if(thread.getState() == Thread.State.WAITING) {
 			thread.resume();
 		}
-		
-		
 	}
-	
 }

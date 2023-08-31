@@ -7,7 +7,6 @@ public class Kernel {
 		
 	}
 	
-	//unsure
 	public int createProcess(UserlandProcess up) {
 		return scheduler.createProcess(up);
 	}
