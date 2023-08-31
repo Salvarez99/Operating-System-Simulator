@@ -2,19 +2,18 @@ package os_project;
 
 public class KernelandProcess {
 
-	private static int nextpid = 0;
-	private static int pid;
+	private static int nextpid = 1;
+	private int pid = nextpid--;
 	private boolean hasStarted;
 	private Thread thread;
-	
 
 	public KernelandProcess(UserlandProcess up) {
-		pid = nextpid;
-		nextpid = pid++;
+		nextpid++;
+		pid = nextpid--;
 		hasStarted = false;
 		thread = new Thread(up);
 	}
-	
+
 	/*
 	 * Retrieves pid
 	 * @Return int pid
@@ -22,16 +21,18 @@ public class KernelandProcess {
 	public int getThreadPid() {
 		return pid;
 	}
-	
+
 	/*
 	 * Check if current process is alive. If yes, suspends the current process
 	 */
 	public void stop() {
 		if (thread.isAlive()) {
-			thread.suspend();
+			try {
+				thread.suspend();
+			}catch(Exception e) {};
 		}
 	}
-	
+
 	/*
 	 * Checks if the current process hasStart and isAlive. If yes, returns true otherwise returns false
 	 * @Return boolean
@@ -42,8 +43,8 @@ public class KernelandProcess {
 		}
 		return false;
 	}
-	
-	
+
+
 	/*
 	 * Retrieves hasStarted
 	 * @Return boolean hasStarted
@@ -62,7 +63,10 @@ public class KernelandProcess {
 			thread.start();
 			hasStarted = true;
 		}else if(thread.getState() == Thread.State.WAITING) {
-			thread.resume();
+
+			try {
+				thread.resume();
+			}catch(Exception e) {};
 		}
 	}
 }

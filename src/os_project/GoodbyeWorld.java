@@ -7,8 +7,15 @@ public class GoodbyeWorld extends UserlandProcess {
 	
 	@Override
 	public void run() {
-		while(true) {
-			System.out.println("Goodbye World");
-		}
+		
+		try {
+			while(true) {
+				System.out.println("Goodbye World");
+				Thread.sleep(50); // sleep for 50 ms
+			}
+		} catch (Exception e) { }
+
+		
+		
 	}
 }

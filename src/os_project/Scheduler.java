@@ -48,11 +48,9 @@ public class Scheduler {
 		
 		if (!kernelandProcess.isHasStarted()) { //no running processes
 			switchProcess();
-			System.out.println("Process Pid" + kernelandProcess.getThreadPid());
 			return kernelandProcess.getThreadPid();
 		}
 		
-		System.out.println("Process Pid" + kernelandProcess.getThreadPid());
 		return kernelandProcess.getThreadPid();
 	}
 	
@@ -72,6 +70,7 @@ public class Scheduler {
 		}
 		kernelandProcess = kernelandProcessList.remove();
 		kernelandProcess.run();
+
 		
 	}
 }
