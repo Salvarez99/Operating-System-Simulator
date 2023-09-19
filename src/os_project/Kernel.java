@@ -2,23 +2,25 @@ package os_project;
 import os_project.Priority;
 
 public class Kernel {
-	private Scheduler scheduler = new Scheduler();
-	Priority priority;
+	private static Scheduler scheduler = new Scheduler();
+//	private Priority priority;
 	
 	public Kernel() {
-		this.priority = Priority.INTERACTIVE;
+		OS.setPriority(Priority.INTERACTIVE);
 	}
 	
 	public int createProcess(UserlandProcess up) {
+		OS.setPriority(Priority.INTERACTIVE);
 		return scheduler.createProcess(up);
 	}
 	
 	public int createProcess(UserlandProcess up, Priority priority) {
-		this.priority = priority;
+//		this.priority = priority;
+		OS.setPriority(priority);
 		return scheduler.createProcess(up);
 	}
 	
-	public void sleep(int milliseconds) {
+	public static void sleep(int milliseconds) {
 		scheduler.sleep(milliseconds);
 	}
 }

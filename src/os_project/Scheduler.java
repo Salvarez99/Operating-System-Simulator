@@ -4,6 +4,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import os_project.Priority;
 import java.time.Clock;
+import java.time.ZoneId;
 import java.util.Random;
 import java.util.Collections;
 
@@ -16,9 +17,10 @@ public class Scheduler {
 	private LinkedList<KernelandProcess> BackgroundProcessList = new LinkedList<>();
 	private LinkedList<KernelandProcess> SleepingProcessList = new LinkedList<>();
 	
-	private KernelandProcess kernelandProcess;
+	private KernelandProcess currentProcess;
 	private Timer timer;
-	Priority priority;
+	private Priority priority;
+	private Clock clock;
 	
 	private class Interrupt extends TimerTask{
 
@@ -41,10 +43,11 @@ public class Scheduler {
 	
 	
 	public Scheduler() {
-		this.priority = Priority.INTERACTIVE;
-		interrupt = new Interrupt(this);
-		timer = new Timer();
-		timer.schedule(interrupt, 250, 250);
+//		this.priority = Priority.INTERACTIVE;
+		this.interrupt = new Interrupt(this);
+		this.timer = new Timer();
+		this.timer.schedule(interrupt, 250, 250);
+		this.clock = Clock.tickMillis(ZoneId.systemDefault());
 	}
 	
 	/*
@@ -55,15 +58,16 @@ public class Scheduler {
 	 */
 	public int createProcess(UserlandProcess up) {
 		
-		kernelandProcess = new KernelandProcess(up);
-		kernelandProcessList.add(kernelandProcess);
+		OS.setPriority(Priority.INTERACTIVE);
+		currentProcess = new KernelandProcess(up);
+		kernelandProcessList.add(currentProcess);
 		
-		if (!kernelandProcess.isHasStarted()) { //no running processes
+		if (!currentProcess.isHasStarted()) { //no running processes
 			switchProcess();
-			return kernelandProcess.getThreadPid();
+			return currentProcess.getThreadPid();
 		}
 		
-		return kernelandProcess.getThreadPid();
+		return currentProcess.getThreadPid();
 	}
 	
 	/*
@@ -74,16 +78,17 @@ public class Scheduler {
 	 * @Return int newProcessPid
 	 */
 	public int createProcess(UserlandProcess up, Priority priority) {
-		this.priority = priority;
-		kernelandProcess = new KernelandProcess(up);
-		kernelandProcessList.add(kernelandProcess);
+//		this.priority = priority;
+		OS.setPriority(priority);
+		currentProcess = new KernelandProcess(up);
+		kernelandProcessList.add(currentProcess);
 		
-		if (!kernelandProcess.isHasStarted()) { //no running processes
+		if (!currentProcess.isHasStarted()) { //no running processes
 			switchProcess();
-			return kernelandProcess.getThreadPid();
+			return currentProcess.getThreadPid();
 		}
 		
-		return kernelandProcess.getThreadPid();
+		return currentProcess.getThreadPid();
 	}
 	
 	
@@ -93,18 +98,67 @@ public class Scheduler {
 	 */
 	public void switchProcess() {
 		
-		if (!kernelandProcess.isDone() && kernelandProcess.isHasStarted()) {
+		//when a process is stopped, it has to be placed in the correct list
+		//track condition for process demotion
+		//use random to pick which list the next process should be selected from
+		
+		if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
 			
-			kernelandProcess.stop();
-			if (!kernelandProcess.isDone()) {
-				kernelandProcessList.add(kernelandProcess);
+			currentProcess.stop();
+			if (!currentProcess.isDone()) {
+				kernelandProcessList.add(currentProcess);
 			}
 		}
-		kernelandProcess = kernelandProcessList.remove();
-		kernelandProcess.run();
+		currentProcess = kernelandProcessList.remove();
+		currentProcess.run();
 	}
 	
 	public void sleep(int milliseconds) {
+		//Need current time
+		//Requested amount of time to sleep, ^milliseconds
+		//Need minimum time to wake up, can only be awaken after this time not before it
+		
+		//switchProcess() when sleep is called
+		//put the sleeping process in the sleepingProcessList
+		//code to stop a process (putting to sleep)
+			//var tmp = currentlyRunning;
+			//currentlyRunning = null;
+			//tmp.stop();
+
+		//wake up process that was sleeping, from one of the list
+		
+		long currentTime = getTime();
+		long alarm = currentTime + milliseconds;
+		
+		//switchProcess()
+		var tmp = currentProcess;
+		currentProcess = null;
+		tmp.stop();
+		this.SleepingProcessList.add(tmp);
+		
 		
 	}
+	
+	public long getTime() {
+		return clock.millis();
+	}
+	
+	public void demote() {
+		switch (OS.getPriority()){
+			case REALTIME:
+				OS.setPriority(Priority.INTERACTIVE);
+			break;
+			
+			case INTERACTIVE:
+				OS.setPriority(Priority.BACKGROUND);
+				break;
+		default:
+			break;
+		}
+			
+	}
+	
+	
+	
+	
 }

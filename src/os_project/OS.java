@@ -28,7 +28,15 @@ public class OS { //supposed to be static
 	}
 
 	public static void sleep(int milliseconds) {
-		
+		Kernel.sleep(milliseconds);
+	}
+	
+	public static void setPriority(Priority priority) {
+		OS.priority = priority;
+	}
+	
+	public static Priority getPriority() {
+		return OS.priority;
 	}
 	
 }
