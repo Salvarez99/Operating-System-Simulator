@@ -147,13 +147,12 @@ public class Scheduler {
 		switch (OS.getPriority()){
 			case REALTIME:
 				OS.setPriority(Priority.INTERACTIVE);
-			break;
-			
+				break;			
 			case INTERACTIVE:
 				OS.setPriority(Priority.BACKGROUND);
 				break;
-		default:
-			break;
+			default:
+				break;
 		}
 			
 	}
