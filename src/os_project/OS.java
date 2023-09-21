@@ -1,10 +1,8 @@
 package os_project;
-import os_project.Priority;
 
 public class OS { //supposed to be static
 
 	private static Kernel kernel;
-	private static Priority priority;
 	
 	/*
 	 * Populates kernel with new instance and call createProcess on "init"
@@ -13,7 +11,6 @@ public class OS { //supposed to be static
 		
 		OS.kernel = new Kernel();
 		OS.kernel.createProcess(init);
-		OS.priority = Priority.INTERACTIVE;
 	}
 	
 	public static int createProcess(UserlandProcess up) {
@@ -22,21 +19,12 @@ public class OS { //supposed to be static
 	}
 	
 	public static int createProcess(UserlandProcess up, Priority priority) {
-		OS.priority = priority;
-		return kernel.createProcess(up);
+		return kernel.createProcess(up, priority);
 		
 	}
 
 	public static void sleep(int milliseconds) {
 		Kernel.sleep(milliseconds);
-	}
-	
-	public static void setPriority(Priority priority) {
-		OS.priority = priority;
-	}
-	
-	public static Priority getPriority() {
-		return OS.priority;
 	}
 	
 }

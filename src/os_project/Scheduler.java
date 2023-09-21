@@ -10,40 +10,30 @@ import java.util.Collections;
 
 
 public class Scheduler {
-	private LinkedList<KernelandProcess> kernelandProcessList = new LinkedList<>();
-	
-	private LinkedList<KernelandProcess> RealTimeProcessList = new LinkedList<>();
-	private LinkedList<KernelandProcess> InteractiveProcessList = new LinkedList<>();
-	private LinkedList<KernelandProcess> BackgroundProcessList = new LinkedList<>();
-	private LinkedList<KernelandProcess> SleepingProcessList = new LinkedList<>();
-	
-	private KernelandProcess currentProcess;
-	private Timer timer;
-	private Priority priority;
-	private Clock clock;
+//	private LinkedList<KernelandProcess> kernelandProcessList = new LinkedList<>();
 	
 	private class Interrupt extends TimerTask{
-
 		private Scheduler scheduler; 
 		
 		public Interrupt(Scheduler scheduler) {
 			this.scheduler = scheduler;
-			
 		}
-		
 		@Override
 		public void run() {
 			scheduler.switchProcess();
-			
 		}
-		
 	}
 	
+	private LinkedList<KernelandProcess> realTimeProcessList = new LinkedList<>();
+	private LinkedList<KernelandProcess> interactiveProcessList = new LinkedList<>();
+	private LinkedList<KernelandProcess> backgroundProcessList = new LinkedList<>();
+	private LinkedList<KernelandProcess> sleepingProcessList = new LinkedList<>();
+	private KernelandProcess currentProcess;
 	private Interrupt interrupt;
-	
+	private Timer timer;
+	private Clock clock;
 	
 	public Scheduler() {
-//		this.priority = Priority.INTERACTIVE;
 		this.interrupt = new Interrupt(this);
 		this.timer = new Timer();
 		this.timer.schedule(interrupt, 250, 250);
@@ -57,16 +47,13 @@ public class Scheduler {
 	 * @Return int newProcessPid
 	 */
 	public int createProcess(UserlandProcess up) {
-		
-		OS.setPriority(Priority.INTERACTIVE);
-		currentProcess = new KernelandProcess(up);
-		kernelandProcessList.add(currentProcess);
+		this.currentProcess = new KernelandProcess(up);
+		interactiveProcessList.add(this.currentProcess);
 		
 		if (!currentProcess.isHasStarted()) { //no running processes
 			switchProcess();
-			return currentProcess.getThreadPid();
+			return this.currentProcess.getThreadPid();
 		}
-		
 		return currentProcess.getThreadPid();
 	}
 	
@@ -78,17 +65,15 @@ public class Scheduler {
 	 * @Return int newProcessPid
 	 */
 	public int createProcess(UserlandProcess up, Priority priority) {
-//		this.priority = priority;
-		OS.setPriority(priority);
-		currentProcess = new KernelandProcess(up);
-		kernelandProcessList.add(currentProcess);
+		this.currentProcess = new KernelandProcess(up, priority);
+		appendToList(currentProcess);
+//		kernelandProcessList.add(currentProcess);
 		
 		if (!currentProcess.isHasStarted()) { //no running processes
 			switchProcess();
-			return currentProcess.getThreadPid();
+			return this.currentProcess.getThreadPid();
 		}
-		
-		return currentProcess.getThreadPid();
+		return this.currentProcess.getThreadPid();
 	}
 	
 	
@@ -104,12 +89,21 @@ public class Scheduler {
 		
 		if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
 			
-			currentProcess.stop();
+//			KernelandProcess newProcess = selectProcess();
+			
+			//Stopping currentProcess
+			var tmp = currentProcess;
+			currentProcess = null;
+			tmp.stop();
+
 			if (!currentProcess.isDone()) {
-				kernelandProcessList.add(currentProcess);
+				appendToList(currentProcess);
+//				kernelandProcessList.add(currentProcess);
 			}
+			
+//			currentProcess = newProcess;
 		}
-		currentProcess = kernelandProcessList.remove();
+		currentProcess = selectProcess();
 		currentProcess.run();
 	}
 	
@@ -118,8 +112,8 @@ public class Scheduler {
 		//Requested amount of time to sleep, ^milliseconds
 		//Need minimum time to wake up, can only be awaken after this time not before it
 		
-		//switchProcess() when sleep is called
 		//put the sleeping process in the sleepingProcessList
+		//switchProcess() when sleep is called
 		//code to stop a process (putting to sleep)
 			//var tmp = currentlyRunning;
 			//currentlyRunning = null;
@@ -128,35 +122,79 @@ public class Scheduler {
 		//wake up process that was sleeping, from one of the list
 		
 		long currentTime = getTime();
-		long alarm = currentTime + milliseconds;
+		long wakeTime = currentTime + milliseconds;
+		currentProcess.setWakeTime(wakeTime);
 		
-		//switchProcess()
-		var tmp = currentProcess;
-		currentProcess = null;
-		tmp.stop();
-		this.SleepingProcessList.add(tmp);
-		
-		
+		this.sleepingProcessList.add(this.currentProcess);
+		switchProcess();
 	}
 	
 	public long getTime() {
 		return clock.millis();
 	}
 	
-	public void demote() {
-		switch (OS.getPriority()){
+	private void demote(KernelandProcess currentProcess) {
+		switch (currentProcess.getPriority()){
 			case REALTIME:
-				OS.setPriority(Priority.INTERACTIVE);
+				currentProcess.setPriority(Priority.INTERACTIVE);
 				break;			
 			case INTERACTIVE:
-				OS.setPriority(Priority.BACKGROUND);
+				currentProcess.setPriority(Priority.BACKGROUND);
 				break;
 			default:
 				break;
 		}
-			
 	}
 	
+	private KernelandProcess selectProcess() {
+		Random rand = new Random();
+		//generate random number between 0 and 9
+		int listNum = rand.nextInt(10);
+		
+		/*
+		 * if there are realTime processes
+		 * 	  select realTime process 6/10
+		 *    if there is interactive processes
+		 * 		  select interactive process 3/10
+		 * 	  else
+		 * 		  select background process 1/10 
+		 * else if there are interactive processes
+		 * 	  select interactive process 3/4
+		 * 	  select background process 1/4
+		 * else there is only background processes 
+		 * 	  use first background process
+		 */
+
+		if(!this.realTimeProcessList.isEmpty()) {
+			if(listNum <= 5) {
+				return this.realTimeProcessList.remove();
+			}else if(!this.interactiveProcessList.isEmpty() && listNum <= 8) {
+				return this.interactiveProcessList.remove();
+			}else 
+				return this.backgroundProcessList.remove();
+		}else if(!this.interactiveProcessList.isEmpty()) {
+			if(listNum <= 6) // 7/10 
+				return this.interactiveProcessList.remove();
+			return this.backgroundProcessList.remove();
+		}
+		return this.backgroundProcessList.remove();
+	}
+	
+	private void appendToList(KernelandProcess process) {
+		switch(process.getPriority()) {
+		case REALTIME:
+			realTimeProcessList.add(process);
+			break;
+		case INTERACTIVE:
+			interactiveProcessList.add(process);
+			break;
+		case BACKGROUND:
+			backgroundProcessList.add(process);
+			break;
+		default:
+			break;
+		}
+	}
 	
 	
 	

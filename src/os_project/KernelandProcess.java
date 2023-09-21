@@ -6,12 +6,23 @@ public class KernelandProcess {
 	private int pid = nextpid--;
 	private boolean hasStarted;
 	private Thread thread;
+	private Priority priority;
+	private long wakeTime;
 
 	public KernelandProcess(UserlandProcess up) {
-		nextpid++;
-		pid = nextpid--;
-		hasStarted = false;
-		thread = new Thread(up);
+		KernelandProcess.nextpid++;
+		this.pid = nextpid--;
+		this.hasStarted = false;
+		this.thread = new Thread(up);
+		this.priority = Priority.INTERACTIVE;
+	}
+	
+	public KernelandProcess(UserlandProcess up, Priority priority) {
+		KernelandProcess.nextpid++;
+		this.pid = nextpid--;
+		this.hasStarted = false;
+		this.thread = new Thread(up);
+		this.priority = priority;
 	}
 
 	/*
@@ -25,6 +36,7 @@ public class KernelandProcess {
 	/*
 	 * Check if current process is alive. If yes, suspends the current process
 	 */
+	@SuppressWarnings("removal")
 	public void stop() {
 		if (thread.isAlive()) {
 			try {
@@ -58,6 +70,7 @@ public class KernelandProcess {
 	 * Check if the current thread has not started. If true, start the thread otherwise check if the 
 	 * current thread is waiting. If true, resume the thread
 	 */
+	@SuppressWarnings("removal")
 	public void run() {
 		if (!isHasStarted()) {
 			thread.start();
@@ -69,4 +82,22 @@ public class KernelandProcess {
 			}catch(Exception e) {};
 		}
 	}
+	
+	public Priority getPriority() {
+		return priority;
+	}
+
+	public void setPriority(Priority priority) {
+		this.priority = priority;
+	}
+
+	public long getWakeTime() {
+		return wakeTime;
+	}
+
+	public void setWakeTime(long wakeTime) {
+		this.wakeTime = wakeTime;
+	}
+	
+	
 }
