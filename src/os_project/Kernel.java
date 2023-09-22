@@ -2,7 +2,6 @@ package os_project;
 
 public class Kernel {
 	private static Scheduler scheduler = new Scheduler();
-//	private Priority priority;
 	
 	public Kernel() {
 	}

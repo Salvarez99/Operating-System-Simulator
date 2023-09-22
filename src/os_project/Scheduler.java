@@ -1,16 +1,15 @@
 package os_project;
+import java.util.List;
 import java.util.LinkedList;
-import java.util.Timer;
-import java.util.TimerTask;
-import os_project.Priority;
 import java.time.Clock;
 import java.time.ZoneId;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.Random;
 import java.util.Collections;
 
 
 public class Scheduler {
-//	private LinkedList<KernelandProcess> kernelandProcessList = new LinkedList<>();
 	
 	private class Interrupt extends TimerTask{
 		private Scheduler scheduler; 
@@ -18,16 +17,17 @@ public class Scheduler {
 		public Interrupt(Scheduler scheduler) {
 			this.scheduler = scheduler;
 		}
+
 		@Override
 		public void run() {
 			scheduler.switchProcess();
 		}
 	}
 	
-	private LinkedList<KernelandProcess> realTimeProcessList = new LinkedList<>();
-	private LinkedList<KernelandProcess> interactiveProcessList = new LinkedList<>();
-	private LinkedList<KernelandProcess> backgroundProcessList = new LinkedList<>();
-	private LinkedList<KernelandProcess> sleepingProcessList = new LinkedList<>();
+	private List<KernelandProcess> realTimeProcessList = new LinkedList<KernelandProcess>();
+	private List<KernelandProcess> interactiveProcessList = new LinkedList<KernelandProcess>();
+	private List<KernelandProcess> backgroundProcessList = new LinkedList<KernelandProcess>();
+	private List<KernelandProcess> sleepingProcessList = new LinkedList<KernelandProcess>();
 	private KernelandProcess currentProcess;
 	private Interrupt interrupt;
 	private Timer timer;
@@ -38,6 +38,10 @@ public class Scheduler {
 		this.timer = new Timer();
 		this.timer.schedule(interrupt, 250, 250);
 		this.clock = Clock.tickMillis(ZoneId.systemDefault());
+		realTimeProcessList = Collections.synchronizedList(realTimeProcessList);
+		interactiveProcessList = Collections.synchronizedList(interactiveProcessList);
+		backgroundProcessList = Collections.synchronizedList(backgroundProcessList);
+		sleepingProcessList = Collections.synchronizedList(sleepingProcessList);
 	}
 	
 	/*
@@ -48,9 +52,10 @@ public class Scheduler {
 	 */
 	public int createProcess(UserlandProcess up) {
 		this.currentProcess = new KernelandProcess(up);
-		interactiveProcessList.add(this.currentProcess);
-		
-		if (!currentProcess.isHasStarted()) { //no running processes
+		appendToList(currentProcess);
+
+		//no running processes
+		if (!currentProcess.isHasStarted()) { 
 			switchProcess();
 			return this.currentProcess.getThreadPid();
 		}
@@ -67,15 +72,14 @@ public class Scheduler {
 	public int createProcess(UserlandProcess up, Priority priority) {
 		this.currentProcess = new KernelandProcess(up, priority);
 		appendToList(currentProcess);
-//		kernelandProcessList.add(currentProcess);
 		
-		if (!currentProcess.isHasStarted()) { //no running processes
+		//no running processes
+		if (!currentProcess.isHasStarted()) { 
 			switchProcess();
 			return this.currentProcess.getThreadPid();
 		}
 		return this.currentProcess.getThreadPid();
 	}
-	
 	
 	/*
 	 * Check if process is running. If yes, stop the process and add to process to end of list.
@@ -88,33 +92,38 @@ public class Scheduler {
 		//use random to pick which list the next process should be selected from
 		
 		/*
-		 * look through sleeping list and see if any sleeping processes are ready to be awaken
+		 * Look through sleeping list and see if any sleeping processes are ready to be awaken
 		 * then put them back into respective list
-		 * 
 		 */
-		
+		for(int i = 0; i < this.sleepingProcessList.size(); i++){
+			if(sleepingProcessList.get(i).getWakeTime() < getTime()){
+				appendToList(sleepingProcessList.remove(i));
+			}
+		}
+
 		/*
-		 * add one to consecutive time then check if it has used alloted time 5 times already
+		 * Add one to consecutive time then check if it has used alloted time 5 times already
 		 * if so call demotion
-		 *  
 		 */
-		
+		currentProcess.incrementTimeOut();
+		if(currentProcess.getTimeOuts()  == 5){
+			System.out.println("Current process demoted from: " + currentProcess.getPriority());
+			demote(currentProcess);
+			System.out.println("to " + currentProcess.getPriority());
+			currentProcess.setTimeOuts(0);
+		}
 		
 		if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
 			
-//			KernelandProcess newProcess = selectProcess();
-			
+			System.out.println("Stopping current process");
 			//Stopping currentProcess
-			var tmp = currentProcess;
+			var temp = currentProcess;
 			currentProcess = null;
-			tmp.stop();
+			temp.stop();
 
-			if (!currentProcess.isDone()) {
-				appendToList(currentProcess);
-//				kernelandProcessList.add(currentProcess);
+			if (!temp.isDone()) {
+				appendToList(temp);
 			}
-			
-//			currentProcess = newProcess;
 		}
 		currentProcess = selectProcess();
 		currentProcess.run();
@@ -180,17 +189,17 @@ public class Scheduler {
 
 		if(!this.realTimeProcessList.isEmpty()) {
 			if(listNum <= 5) {
-				return this.realTimeProcessList.remove();
+				return this.realTimeProcessList.remove(0);
 			}else if(!this.interactiveProcessList.isEmpty() && listNum <= 8) {
-				return this.interactiveProcessList.remove();
+				return this.interactiveProcessList.remove(0);
 			}else 
-				return this.backgroundProcessList.remove();
+				return this.backgroundProcessList.remove(0);
 		}else if(!this.interactiveProcessList.isEmpty()) {
 			if(listNum <= 6) // 7/10 
-				return this.interactiveProcessList.remove();
-			return this.backgroundProcessList.remove();
+				return this.interactiveProcessList.remove(0);
+			return this.backgroundProcessList.remove(0);
 		}
-		return this.backgroundProcessList.remove();
+		return this.backgroundProcessList.remove(0);
 	}
 	
 	private void appendToList(KernelandProcess process) {
@@ -208,7 +217,4 @@ public class Scheduler {
 			break;
 		}
 	}
-	
-	
-	
 }

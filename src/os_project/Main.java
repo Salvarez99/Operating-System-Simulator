@@ -6,11 +6,11 @@ public class Main {
 		
 		HelloWorld helloworld = new HelloWorld();
 		GoodbyeWorld goodbyeWorld = new GoodbyeWorld();
+		World world = new World();
 		
 		OS.startUp(helloworld);
-		OS.createProcess(goodbyeWorld); //add priority to this
-		/*added from eclipse */
-		/*added from vscode */
+		//add priority to this-
+		OS.createProcess(goodbyeWorld, Priority.BACKGROUND); 
+		OS.createProcess(world, Priority.REALTIME);
 	}
-
 }

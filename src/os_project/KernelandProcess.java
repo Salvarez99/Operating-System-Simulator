@@ -8,6 +8,7 @@ public class KernelandProcess {
 	private Thread thread;
 	private Priority priority;
 	private long wakeTime;
+	private int timeOuts;
 
 	public KernelandProcess(UserlandProcess up) {
 		KernelandProcess.nextpid++;
@@ -15,6 +16,7 @@ public class KernelandProcess {
 		this.hasStarted = false;
 		this.thread = new Thread(up);
 		this.priority = Priority.INTERACTIVE;
+		this.timeOuts = 0;
 	}
 	
 	public KernelandProcess(UserlandProcess up, Priority priority) {
@@ -23,6 +25,7 @@ public class KernelandProcess {
 		this.hasStarted = false;
 		this.thread = new Thread(up);
 		this.priority = priority;
+		this.timeOuts = 0;
 	}
 
 	/*
@@ -98,6 +101,16 @@ public class KernelandProcess {
 	public void setWakeTime(long wakeTime) {
 		this.wakeTime = wakeTime;
 	}
+
+	public int getTimeOuts() {
+		return timeOuts;
+	}
+
+	public void setTimeOuts(int timeOuts) {
+		this.timeOuts = timeOuts;
+	}
 	
-	
+	public void incrementTimeOut(){
+		this.timeOuts++;
+	}
 }
