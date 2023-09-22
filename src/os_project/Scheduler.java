@@ -107,12 +107,13 @@ public class Scheduler {
 		 */
 		currentProcess.incrementTimeOut();
 		if(currentProcess.getTimeOuts()  == 5){
-			System.out.println("Current process demoted from: " + currentProcess.getPriority());
+			System.out.println("Process id" + currentProcess.getThreadPid() +" demoted from: " + currentProcess.getPriority());
 			demote(currentProcess);
 			System.out.println("to " + currentProcess.getPriority());
 			currentProcess.setTimeOuts(0);
 		}
 		
+		//check if process is running
 		if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
 			
 			System.out.println("Stopping current process");
@@ -171,7 +172,7 @@ public class Scheduler {
 	private KernelandProcess selectProcess() {
 		Random rand = new Random();
 		//generate random number between 0 and 9
-		int listNum = rand.nextInt(10);
+		int select_1 = rand.nextInt(10);
 		
 		/*
 		 * if there are realTime processes
@@ -188,18 +189,28 @@ public class Scheduler {
 		 */
 
 		if(!this.realTimeProcessList.isEmpty()) {
-			if(listNum <= 5) {
+			if(select_1 <= 5) {
 				return this.realTimeProcessList.remove(0);
-			}else if(!this.interactiveProcessList.isEmpty() && listNum <= 8) {
+
+			}else if(!this.interactiveProcessList.isEmpty() && select_1 <= 8) {
 				return this.interactiveProcessList.remove(0);
-			}else 
+
+			}else if(!backgroundProcessList.isEmpty()) 
 				return this.backgroundProcessList.remove(0);
+
 		}else if(!this.interactiveProcessList.isEmpty()) {
-			if(listNum <= 6) // 7/10 
+
+			//generate random number between 0 to 3
+			int select_2 = rand.nextInt(4);
+
+			if(select_2 <= 2) // 3/4 
 				return this.interactiveProcessList.remove(0);
+			else if(!backgroundProcessList.isEmpty())
 			return this.backgroundProcessList.remove(0);
-		}
-		return this.backgroundProcessList.remove(0);
+		}else
+			return this.backgroundProcessList.remove(0);
+
+		return currentProcess;
 	}
 	
 	private void appendToList(KernelandProcess process) {
