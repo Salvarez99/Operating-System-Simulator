@@ -87,6 +87,19 @@ public class Scheduler {
 		//track condition for process demotion
 		//use random to pick which list the next process should be selected from
 		
+		/*
+		 * look through sleeping list and see if any sleeping processes are ready to be awaken
+		 * then put them back into respective list
+		 * 
+		 */
+		
+		/*
+		 * add one to consecutive time then check if it has used alloted time 5 times already
+		 * if so call demotion
+		 *  
+		 */
+		
+		
 		if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
 			
 //			KernelandProcess newProcess = selectProcess();

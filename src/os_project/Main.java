@@ -8,7 +8,7 @@ public class Main {
 		GoodbyeWorld goodbyeWorld = new GoodbyeWorld();
 		
 		OS.startUp(helloworld);
-		OS.createProcess(goodbyeWorld);
+		OS.createProcess(goodbyeWorld); //add priority to this
 		
 	}
 
