@@ -9,7 +9,7 @@ public class Main {
 		
 		OS.startUp(helloworld);
 		OS.createProcess(goodbyeWorld); //add priority to this
-		
+		/*added from eclipse */
 	}
 
 }
