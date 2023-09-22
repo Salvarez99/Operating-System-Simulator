@@ -9,7 +9,6 @@ public class Main {
 		World world = new World();
 		
 		OS.startUp(helloworld);
-		//add priority to this-
 		OS.createProcess(goodbyeWorld, Priority.BACKGROUND); 
 		OS.createProcess(world, Priority.REALTIME);
 	}

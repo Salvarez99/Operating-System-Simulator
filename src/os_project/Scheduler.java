@@ -177,10 +177,6 @@ public class Scheduler {
 	}
 
 	private KernelandProcess selectProcess() {
-		Random rand = new Random();
-		//generate random number between 0 and 9
-		int select_1 = rand.nextInt(10);
-
 		/*
 		 * if there are realTime processes
 		 * 	  select realTime process 6/10
@@ -194,6 +190,11 @@ public class Scheduler {
 		 * else there is only background processes 
 		 * 	  use first background process
 		 */
+
+		 Random rand = new Random();
+		 
+		//generate random number between 0 and 9
+		int select_1 = rand.nextInt(10);
 
 		if(!this.realTimeProcessList.isEmpty()) {
 			if(select_1 <= 5) {
