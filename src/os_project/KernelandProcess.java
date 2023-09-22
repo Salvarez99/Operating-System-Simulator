@@ -2,8 +2,8 @@ package os_project;
 
 public class KernelandProcess {
 
-	private static int nextpid = 1;
-	private int pid = nextpid--;
+	private static int nextpid = 2;
+	private int pid;
 	private boolean hasStarted;
 	private Thread thread;
 	private Priority priority;
@@ -11,8 +11,8 @@ public class KernelandProcess {
 	private int timeOuts;
 
 	public KernelandProcess(UserlandProcess up) {
+		this.pid = KernelandProcess.nextpid - 1;
 		KernelandProcess.nextpid++;
-		this.pid = nextpid--;
 		this.hasStarted = false;
 		this.thread = new Thread(up);
 		this.priority = Priority.INTERACTIVE;
@@ -20,8 +20,8 @@ public class KernelandProcess {
 	}
 	
 	public KernelandProcess(UserlandProcess up, Priority priority) {
+		this.pid = KernelandProcess.nextpid - 1;
 		KernelandProcess.nextpid++;
-		this.pid = nextpid--;
 		this.hasStarted = false;
 		this.thread = new Thread(up);
 		this.priority = priority;

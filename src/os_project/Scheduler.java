@@ -113,9 +113,9 @@ public class Scheduler {
 			 */
 			currentProcess.incrementTimeOut();
 			if(currentProcess.getTimeOuts()  == 5){
-				System.out.println("Process id" + currentProcess.getThreadPid() +" demoted from: " + currentProcess.getPriority());
+				System.out.print("Process id (" + currentProcess.getThreadPid() +") demoted from: " + currentProcess.getPriority());
 				demote(currentProcess);
-				System.out.println("to " + currentProcess.getPriority());
+				System.out.println(" to " + currentProcess.getPriority());
 				currentProcess.setTimeOuts(0);
 			}
 
