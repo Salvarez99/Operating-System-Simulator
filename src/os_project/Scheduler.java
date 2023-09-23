@@ -95,14 +95,12 @@ public class Scheduler {
 		//track condition for process demotion
 		//use random to pick which list the next process should be selected from
 
-		/*
-		 * Look through sleeping list and see if any sleeping processes are ready to be awaken
-		 * then put them back into respective list
-		 */
-		for(int i = 0; i < this.sleepingProcessList.size(); i++){
-			if(sleepingProcessList.get(i).getWakeTime() < getTime()){
-				appendToList(sleepingProcessList.remove(i));
-			}
+		while(!sleepingProcessList.isEmpty()){
+			wakeUp();
+		}
+
+		if(this.currentProcess == null){
+			System.exit(0);
 		}
 
 		if( this.currentProcess != null) {
@@ -190,8 +188,7 @@ public class Scheduler {
 		 * else there is only background processes 
 		 * 	  use first background process
 		 */
-
-		 Random rand = new Random();
+		Random rand = new Random();
 		 
 		//generate random number between 0 and 9
 		int select_1 = rand.nextInt(10);
@@ -200,25 +197,60 @@ public class Scheduler {
 			if(select_1 <= 5) {
 				return this.realTimeProcessList.remove(0);
 
-			}else if(!this.interactiveProcessList.isEmpty() && select_1 <= 8) {
-				return this.interactiveProcessList.remove(0);
+			}else if(select_1 <= 8) {
 
-			}else if(!backgroundProcessList.isEmpty()) 
-				return this.backgroundProcessList.remove(0);
+				if(!interactiveProcessList.isEmpty()){
+					return this.interactiveProcessList.remove(0);
+				}else if(!backgroundProcessList.isEmpty()){
+					return backgroundProcessList.remove(0);
+				}else
+					return this.realTimeProcessList.remove(0);
+		
+			}else{
+
+				if(!backgroundProcessList.isEmpty()){
+					return this.backgroundProcessList.remove(0);
+				}else 
+					return realTimeProcessList.remove(0);
+			}
 
 		}else if(!this.interactiveProcessList.isEmpty()) {
 
 			//generate random number between 0 to 3
 			int select_2 = rand.nextInt(4);
 
-			if(select_2 <= 2) // 3/4 
+			if(select_2 <= 2){
 				return this.interactiveProcessList.remove(0);
-			else if(!backgroundProcessList.isEmpty())
+			}else if(!backgroundProcessList.isEmpty())
 				return this.backgroundProcessList.remove(0);
-		}else
-			return this.backgroundProcessList.remove(0);
 
-		return currentProcess;
+		}else if(!backgroundProcessList.isEmpty()){
+			return this.backgroundProcessList.remove(0);
+		}
+
+		return null;
+	}
+
+	/*
+	 * Iterate through sleeping list and wake processes ready to be awaken. Then check if list is empty or not.
+	 * Return True if there are no sleeping processes.
+	 */
+	private void wakeUp(){
+		/*
+		 * Look through sleeping list and see if any sleeping processes are ready to be awaken
+		 * then put them back into respective list
+		 */
+		for(int i = 0; i < this.sleepingProcessList.size(); i++){
+			if(sleepingProcessList.get(i).getWakeTime() < getTime()){
+				appendToList(sleepingProcessList.remove(i));
+			}
+		}
+
+		// if(!sleepingProcessList.isEmpty()){
+		// 	return false;
+		// }
+
+		// return true;
 	}
 
 	private void appendToList(KernelandProcess process) {
