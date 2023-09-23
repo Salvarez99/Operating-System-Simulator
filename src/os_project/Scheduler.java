@@ -99,9 +99,7 @@ public class Scheduler {
 			wakeUp();
 		}
 
-		if(this.currentProcess == null){
-			System.exit(0);
-		}
+
 
 		if( this.currentProcess != null) {
 
@@ -120,7 +118,7 @@ public class Scheduler {
 			//check if process is running
 			if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
 
-				System.out.println("Stopping current process");
+				System.out.println("Stopping current process " + currentProcess.getThreadPid());
 				//Stopping currentProcess
 				var temp = currentProcess;
 				currentProcess = null;
@@ -132,6 +130,13 @@ public class Scheduler {
 			}
 		}
 		currentProcess = selectProcess();
+
+		if(this.currentProcess == null){
+			System.out.println("System existing");
+			System.exit(0);
+		}
+
+
 		currentProcess.run();
 	}
 
@@ -189,7 +194,7 @@ public class Scheduler {
 		 * 	  use first background process
 		 */
 		Random rand = new Random();
-		 
+
 		//generate random number between 0 and 9
 		int select_1 = rand.nextInt(10);
 
@@ -205,7 +210,7 @@ public class Scheduler {
 					return backgroundProcessList.remove(0);
 				}else
 					return this.realTimeProcessList.remove(0);
-		
+
 			}else{
 
 				if(!backgroundProcessList.isEmpty()){
@@ -240,12 +245,15 @@ public class Scheduler {
 		 * Look through sleeping list and see if any sleeping processes are ready to be awaken
 		 * then put them back into respective list
 		 */
-		for(int i = 0; i < this.sleepingProcessList.size(); i++){
-			if(sleepingProcessList.get(i).getWakeTime() < getTime()){
-				appendToList(sleepingProcessList.remove(i));
+
+		if(!sleepingProcessList.isEmpty()) {
+
+			for(int i = 0; i < this.sleepingProcessList.size(); i++){
+				if(sleepingProcessList.get(i).getWakeTime() < getTime()){
+					appendToList(sleepingProcessList.remove(i));
+				}
 			}
 		}
-
 		// if(!sleepingProcessList.isEmpty()){
 		// 	return false;
 		// }

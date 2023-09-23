@@ -1,5 +1,7 @@
 package os_project;
 
+import java.util.Iterator;
+
 public class World extends UserlandProcess{
     public World() {
 	}
@@ -7,12 +9,13 @@ public class World extends UserlandProcess{
 	@Override
 	public void run() {
 		
-		try {
-			while(true) {
-				System.out.println("World");
-				Thread.sleep(50); // sleep for 50 ms
-			}
-		} catch (Exception e) { }
+		System.out.println("world");
+		
+		OS.sleep(250);
+		
+		for (int i = 0; i < 5; i++) {
+			System.out.println("world " + (i + 1));
+		}
 		
 	}
 }
