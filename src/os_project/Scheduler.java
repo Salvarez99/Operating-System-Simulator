@@ -53,7 +53,6 @@ public class Scheduler {
 	public int createProcess(UserlandProcess up) {
 
 		KernelandProcess newProcess = new KernelandProcess(up);
-		//		this.currentProcess = new KernelandProcess(up);
 		appendToList(newProcess);
 
 		//no running processes
@@ -74,7 +73,6 @@ public class Scheduler {
 	public int createProcess(UserlandProcess up, Priority priority) {
 
 		KernelandProcess newProcess = new KernelandProcess(up, priority);
-		//		this.currentProcess = new KernelandProcess(up, priority);
 		appendToList(newProcess);
 
 		//no running processes
@@ -132,7 +130,7 @@ public class Scheduler {
 		currentProcess = selectProcess();
 
 		if(this.currentProcess == null){
-			System.out.println("System existing");
+			System.out.println("System exiting");
 			System.exit(0);
 		}
 
@@ -233,6 +231,9 @@ public class Scheduler {
 			return this.backgroundProcessList.remove(0);
 		}
 
+
+
+
 		return null;
 	}
 
@@ -246,14 +247,14 @@ public class Scheduler {
 		 * then put them back into respective list
 		 */
 
-		if(!sleepingProcessList.isEmpty()) {
+		// if(!sleepingProcessList.isEmpty()) {
 
 			for(int i = 0; i < this.sleepingProcessList.size(); i++){
 				if(sleepingProcessList.get(i).getWakeTime() < getTime()){
 					appendToList(sleepingProcessList.remove(i));
 				}
 			}
-		}
+		// }
 		// if(!sleepingProcessList.isEmpty()){
 		// 	return false;
 		// }
