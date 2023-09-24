@@ -1,5 +1,7 @@
 package os_project;
 
+import java.lang.Thread.State;
+
 public class KernelandProcess {
 
 	private static int nextpid = 2;
@@ -44,6 +46,7 @@ public class KernelandProcess {
 		if (thread.isAlive()) {
 			try {
 				thread.suspend();
+				//TODO: Try object.wait()
 			}catch(Exception e) {};
 		}
 	}
@@ -75,10 +78,14 @@ public class KernelandProcess {
 	 */
 	@SuppressWarnings("removal")
 	public void run() {
-		if (!isHasStarted()) {
+		//TODO: Comment out print statement later 
+		System.out.println(thread.getState());
+		if (!isHasStarted() && thread.getState() == State.NEW) {
 			thread.start();
 			hasStarted = true;
-		}else if(thread.getState() == Thread.State.WAITING) {
+			
+		//TODO: add condition to look for runnable states
+		}else if(thread.getState() == Thread.State.WAITING || thread.getState() == Thread.State.RUNNABLE) {
 
 			try {
 				thread.resume();
