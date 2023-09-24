@@ -10,26 +10,27 @@ public class Main {
 		UserlandProcess slep = new Sleep500();
 		
 		//PID 1
+		//Runs long time intentionally
 		OS.startUp(helloworld);
 		
 		//PID 2
 		//Runs long time intentionally
-		OS.createProcess(goodbyeWorld, Priority.REALTIME); 
+		// OS.createProcess(goodbyeWorld, Priority.REALTIME); 
 		
 		//PID 3
 		//RealTime process
-//		OS.createProcess(world, Priority.REALTIME);
+		// OS.createProcess(world, Priority.REALTIME);
 		
 		//PID 4
 		//Interactive process
-//		OS.createProcess(world, Priority.INTERACTIVE);
+		// OS.createProcess(world, Priority.INTERACTIVE);
 		
 		//PID 5
 		//TODO: Make process that runs in background
-//		OS.createProcess(world, Priority.BACKGROUND);
+		// OS.createProcess(world, Priority.BACKGROUND);
 		
 		//PID 6
 		//Make process that calls OS.sleep intentionally
-//		OS.createProcess(slep, Priority.INTERACTIVE);
+		OS.createProcess(slep, Priority.INTERACTIVE);
 	}
 }

@@ -97,6 +97,9 @@ public class Scheduler {
 			wakeUp();
 		}
 
+		if(!sleepingProcessList.isEmpty())
+			return;
+
 
 
 		if( this.currentProcess != null) {
@@ -110,9 +113,7 @@ public class Scheduler {
 				
 				if(currentProcess.getPriority() != Priority.BACKGROUND) {
 					
-//					System.out.print("Process id (" + currentProcess.getThreadPid() +") demoted from: " + currentProcess.getPriority());
 					demote(currentProcess);
-//					System.out.println(" to " + currentProcess.getPriority());
 					currentProcess.setTimeOuts(0);
 				}
 			}
@@ -120,7 +121,7 @@ public class Scheduler {
 			//check if process is running
 			if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
 
-				System.out.println("Process(" + currentProcess.getThreadPid() + "): Stopping");
+				System.out.println("Process(" + currentProcess.getThreadPid() + "): Stopping\n");
 				//Stopping currentProcess
 				var temp = currentProcess;
 				currentProcess = null;
@@ -262,6 +263,9 @@ public class Scheduler {
 
 		for(int i = 0; i < this.sleepingProcessList.size(); i++){
 			if(sleepingProcessList.get(i).getWakeTime() < getTime()){
+
+				KernelandProcess awakenProcess = sleepingProcessList.get(i);
+				System.out.println("Waking Process: (" + awakenProcess.getThreadPid() + ")");
 				appendToList(sleepingProcessList.remove(i));
 			}
 		}
