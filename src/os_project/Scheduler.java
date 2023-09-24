@@ -93,12 +93,13 @@ public class Scheduler {
 		//track condition for process demotion
 		//use random to pick which list the next process should be selected from
 
-		while(!sleepingProcessList.isEmpty()){
-			wakeUp();
-		}
+		//TODO:
+		// while(!sleepingProcessList.isEmpty()){
+		// 	wakeUp();
+		// }
 
-		if(!sleepingProcessList.isEmpty())
-			return;
+		// if(!sleepingProcessList.isEmpty())
+		// 	return;
 
 
 
