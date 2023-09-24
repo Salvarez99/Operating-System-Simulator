@@ -206,10 +206,11 @@ public class Scheduler {
 		 */
 		Random rand = new Random();
 
+
+		if(!this.realTimeProcessList.isEmpty()) {
 		//generate random number between 0 and 9
 		int select_1 = rand.nextInt(10);
 
-		if(!this.realTimeProcessList.isEmpty()) {
 			if(select_1 <= 5) {
 				return this.realTimeProcessList.remove(0);
 
