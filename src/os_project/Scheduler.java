@@ -224,9 +224,11 @@ public class Scheduler {
 
 			if(select_2 <= 2){
 				return this.interactiveProcessList.remove(0);
-			}else if(!backgroundProcessList.isEmpty())
+			}else if(!backgroundProcessList.isEmpty()) {
 				return this.backgroundProcessList.remove(0);
-
+			}else
+				return this.interactiveProcessList.remove(0);
+			
 		}else if(!backgroundProcessList.isEmpty()){
 			return this.backgroundProcessList.remove(0);
 		}
@@ -249,11 +251,11 @@ public class Scheduler {
 
 		// if(!sleepingProcessList.isEmpty()) {
 
-			for(int i = 0; i < this.sleepingProcessList.size(); i++){
-				if(sleepingProcessList.get(i).getWakeTime() < getTime()){
-					appendToList(sleepingProcessList.remove(i));
-				}
+		for(int i = 0; i < this.sleepingProcessList.size(); i++){
+			if(sleepingProcessList.get(i).getWakeTime() < getTime()){
+				appendToList(sleepingProcessList.remove(i));
 			}
+		}
 		// }
 		// if(!sleepingProcessList.isEmpty()){
 		// 	return false;
