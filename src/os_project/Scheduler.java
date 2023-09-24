@@ -94,22 +94,17 @@ public class Scheduler {
 		//use random to pick which list the next process should be selected from
 
 		//TODO:
-		// while(!sleepingProcessList.isEmpty()){
-		// 	wakeUp();
-		// }
+		while(!sleepingProcessList.isEmpty()){
+			wakeUp();
+		}
 
 		// if(!sleepingProcessList.isEmpty())
 		// 	return;
+		
+		if((currentProcess = selectProcess()) != null){
 
-
-
-		if( this.currentProcess != null) {
-
-			/*
-			 * Add one to consecutive time then check if it has used alloted time 5 times already
-			 * if so call demotion
-			 */
 			currentProcess.incrementTimeOut();
+
 			if(currentProcess.getTimeOuts()  == 5){
 				
 				if(currentProcess.getPriority() != Priority.BACKGROUND) {
@@ -119,10 +114,10 @@ public class Scheduler {
 				}
 			}
 
-			//check if process is running
 			if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
 
 				System.out.println("Process(" + currentProcess.getThreadPid() + "): Stopping\n");
+
 				//Stopping currentProcess
 				var temp = currentProcess;
 				currentProcess = null;
@@ -132,19 +127,57 @@ public class Scheduler {
 					appendToList(temp);
 				}
 			}
+
+			System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") (" + currentProcess.getPriority() +")");
+			currentProcess.run();
 		}
-		currentProcess = selectProcess();
+
+
+
+
+		//TODO: Uncomment or remove this later 
+		// if( this.currentProcess != null) {
+
+		// 	/*
+		// 	 * Add one to consecutive time then check if it has used alloted time 5 times already
+		// 	 * if so call demotion
+		// 	 */
+		// 	currentProcess.incrementTimeOut();
+		// 	if(currentProcess.getTimeOuts()  == 5){
+				
+		// 		if(currentProcess.getPriority() != Priority.BACKGROUND) {
+					
+		// 			demote(currentProcess);
+		// 			currentProcess.setTimeOuts(0);
+		// 		}
+		// 	}
+
+		// 	//check if process is running
+		// 	if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
+
+		// 		System.out.println("Process(" + currentProcess.getThreadPid() + "): Stopping\n");
+		// 		//Stopping currentProcess
+		// 		var temp = currentProcess;
+		// 		currentProcess = null;
+		// 		temp.stop();
+
+		// 		if (!temp.isDone()) {
+		// 			appendToList(temp);
+		// 		}
+		// 	}
+		// }
+		// currentProcess = selectProcess();
 		
 
-		if(this.currentProcess == null){
-			System.out.println("System exiting");
-			System.exit(0);
-		}else {
-			System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") (" + currentProcess.getPriority() +")");
-		}
+		// if(this.currentProcess == null){
+		// 	System.out.println("System exiting");
+		// 	System.exit(0);
+		// }else {
+		// 	System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") (" + currentProcess.getPriority() +")");
+		// }
 
 
-		currentProcess.run();
+		// currentProcess.run();
 	}
 
 	public synchronized void sleep(int milliseconds) {

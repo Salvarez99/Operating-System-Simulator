@@ -15,7 +15,7 @@ public class Main {
 		
 		//PID 2
 		//Runs long time intentionally
-		// OS.createProcess(goodbyeWorld, Priority.REALTIME); 
+		OS.createProcess(goodbyeWorld, Priority.REALTIME); 
 		
 		//PID 3
 		//RealTime process
@@ -31,6 +31,6 @@ public class Main {
 		
 		//PID 6
 		//Make process that calls OS.sleep intentionally
-		OS.createProcess(slep, Priority.INTERACTIVE);
+		// OS.createProcess(slep, Priority.INTERACTIVE);
 	}
 }
