@@ -78,7 +78,7 @@ public class KernelandProcess {
 	 */
 	@SuppressWarnings("removal")
 	public void run() {
-		//TODO: Comment out print statement later 
+		//TODO: Comment out print statement later d
 		System.out.println(thread.getState());
 		if (!isHasStarted() && thread.getState() == State.NEW) {
 			thread.start();
