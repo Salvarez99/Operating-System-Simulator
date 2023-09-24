@@ -50,7 +50,7 @@ public class Scheduler {
 	 * @Param UserlandProcess up
 	 * @Return int newProcessPid
 	 */
-	public int createProcess(UserlandProcess up) {
+	public synchronized int createProcess(UserlandProcess up) {
 
 		KernelandProcess newProcess = new KernelandProcess(up);
 		appendToList(newProcess);
@@ -70,7 +70,7 @@ public class Scheduler {
 	 * @Param2 Priority priority
 	 * @Return int newProcessPid
 	 */
-	public int createProcess(UserlandProcess up, Priority priority) {
+	public synchronized int createProcess(UserlandProcess up, Priority priority) {
 
 		KernelandProcess newProcess = new KernelandProcess(up, priority);
 		appendToList(newProcess);
@@ -87,7 +87,7 @@ public class Scheduler {
 	 * Check if process is running. If yes, stop the process and add to process to end of list.
 	 * Then set current process to first process in the process list, run the process.  
 	 */
-	public void switchProcess() {
+	public synchronized void switchProcess() {
 
 		//when a process is stopped, it has to be placed in the correct list
 		//track condition for process demotion
@@ -107,16 +107,20 @@ public class Scheduler {
 			 */
 			currentProcess.incrementTimeOut();
 			if(currentProcess.getTimeOuts()  == 5){
-				System.out.print("Process id (" + currentProcess.getThreadPid() +") demoted from: " + currentProcess.getPriority());
-				demote(currentProcess);
-				System.out.println(" to " + currentProcess.getPriority());
-				currentProcess.setTimeOuts(0);
+				
+				if(currentProcess.getPriority() != Priority.BACKGROUND) {
+					
+//					System.out.print("Process id (" + currentProcess.getThreadPid() +") demoted from: " + currentProcess.getPriority());
+					demote(currentProcess);
+//					System.out.println(" to " + currentProcess.getPriority());
+					currentProcess.setTimeOuts(0);
+				}
 			}
 
 			//check if process is running
 			if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
 
-				System.out.println("Stopping current process " + currentProcess.getThreadPid());
+				System.out.println("Process(" + currentProcess.getThreadPid() + "): Stopping");
 				//Stopping currentProcess
 				var temp = currentProcess;
 				currentProcess = null;
@@ -128,17 +132,20 @@ public class Scheduler {
 			}
 		}
 		currentProcess = selectProcess();
+		
 
 		if(this.currentProcess == null){
 			System.out.println("System exiting");
 			System.exit(0);
+		}else {
+			System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") (" + currentProcess.getPriority() +")");
 		}
 
 
 		currentProcess.run();
 	}
 
-	public void sleep(int milliseconds) {
+	public synchronized void sleep(int milliseconds) {
 		//Need current time
 		//Requested amount of time to sleep, ^milliseconds
 		//Need minimum time to wake up, can only be awaken after this time not before it
@@ -156,6 +163,7 @@ public class Scheduler {
 		long wakeTime = currentTime + milliseconds;
 		currentProcess.setWakeTime(wakeTime);
 
+		System.out.println("Putting Process: (" + currentProcess.getThreadPid() + ") to sleep");
 		this.sleepingProcessList.add(this.currentProcess);
 		switchProcess();
 	}
@@ -167,17 +175,22 @@ public class Scheduler {
 	private void demote(KernelandProcess currentProcess) {
 		switch (currentProcess.getPriority()){
 		case REALTIME:
+			
+			System.out.print("Process ID (" + currentProcess.getThreadPid() +") Demoted from: " + currentProcess.getPriority());
 			currentProcess.setPriority(Priority.INTERACTIVE);
+			System.out.println(" to " + currentProcess.getPriority());
 			break;			
 		case INTERACTIVE:
+			System.out.print("Process ID (" + currentProcess.getThreadPid() +") Demoted from: " + currentProcess.getPriority());
 			currentProcess.setPriority(Priority.BACKGROUND);
+			System.out.println(" to " + currentProcess.getPriority());
 			break;
 		default:
 			break;
 		}
 	}
 
-	private KernelandProcess selectProcess() {
+	private synchronized KernelandProcess selectProcess() {
 		/*
 		 * if there are realTime processes
 		 * 	  select realTime process 6/10
@@ -233,9 +246,6 @@ public class Scheduler {
 			return this.backgroundProcessList.remove(0);
 		}
 
-
-
-
 		return null;
 	}
 
@@ -243,28 +253,20 @@ public class Scheduler {
 	 * Iterate through sleeping list and wake processes ready to be awaken. Then check if list is empty or not.
 	 * Return True if there are no sleeping processes.
 	 */
-	private void wakeUp(){
+	private synchronized void wakeUp(){
 		/*
 		 * Look through sleeping list and see if any sleeping processes are ready to be awaken
 		 * then put them back into respective list
 		 */
-
-		// if(!sleepingProcessList.isEmpty()) {
 
 		for(int i = 0; i < this.sleepingProcessList.size(); i++){
 			if(sleepingProcessList.get(i).getWakeTime() < getTime()){
 				appendToList(sleepingProcessList.remove(i));
 			}
 		}
-		// }
-		// if(!sleepingProcessList.isEmpty()){
-		// 	return false;
-		// }
-
-		// return true;
 	}
 
-	private void appendToList(KernelandProcess process) {
+	private synchronized void appendToList(KernelandProcess process) {
 		switch(process.getPriority()) {
 		case REALTIME:
 			realTimeProcessList.add(process);
