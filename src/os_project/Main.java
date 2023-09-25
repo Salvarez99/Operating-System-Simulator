@@ -14,7 +14,7 @@ public class Main {
 		OS.startUp(helloworld);
 		
 		//PID 2
-		//Runs long time intentionally
+		//Runs long time intentionally but calls OS.sleep()
 		OS.createProcess(goodbyeWorld, Priority.REALTIME); 
 		
 		//PID 3
