@@ -93,13 +93,11 @@ public class Scheduler {
 		//track condition for process demotion
 		//use random to pick which list the next process should be selected from
 
-		//TODO:
-		//		while(!sleepingProcessList.isEmpty()){
-		//			wakeUp();
-		//		}
 
-		// if(!sleepingProcessList.isEmpty())
-		// 	return;
+		while(!sleepingProcessList.isEmpty()){
+			wakeUp();
+		}
+
 
 
 		if(currentProcess != null){
@@ -131,15 +129,8 @@ public class Scheduler {
 				}
 			}
 
-			//TODO stuff
 			currentProcess = selectProcess();
 
-			/*
-			 * if process is not null
-			 * 		run process
-			 * else
-			 * 		nothing
-			 */
 			if(currentProcess != null) {
 				System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") (" + currentProcess.getPriority() +")");
 				currentProcess.run();
@@ -149,12 +140,6 @@ public class Scheduler {
 
 
 		}else {
-			/*
-			 * if process is not null
-			 * 		run process
-			 * else
-			 * 		nothing
-			 */
 			currentProcess = selectProcess();
 			if(currentProcess != null) {
 				System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") (" + currentProcess.getPriority() +")");
@@ -163,49 +148,6 @@ public class Scheduler {
 
 			}
 		}
-		//TODO: Uncomment or remove this later 
-		// if( this.currentProcess != null) {
-
-		// 	/*
-		// 	 * Add one to consecutive time then check if it has used alloted time 5 times already
-		// 	 * if so call demotion
-		// 	 */
-		// 	currentProcess.incrementTimeOut();
-		// 	if(currentProcess.getTimeOuts()  == 5){
-
-		// 		if(currentProcess.getPriority() != Priority.BACKGROUND) {
-
-		// 			demote(currentProcess);
-		// 			currentProcess.setTimeOuts(0);
-		// 		}
-		// 	}
-
-		// 	//check if process is running
-		// 	if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
-
-		// 		System.out.println("Process(" + currentProcess.getThreadPid() + "): Stopping\n");
-		// 		//Stopping currentProcess
-		// 		var temp = currentProcess;
-		// 		currentProcess = null;
-		// 		temp.stop();
-
-		// 		if (!temp.isDone()) {
-		// 			appendToList(temp);
-		// 		}
-		// 	}
-		// }
-		// currentProcess = selectProcess();
-
-
-		// if(this.currentProcess == null){
-		// 	System.out.println("System exiting");
-		// 	System.exit(0);
-		// }else {
-		// 	System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") (" + currentProcess.getPriority() +")");
-		// }
-
-
-		// currentProcess.run();
 	}
 
 	public synchronized void sleep(int milliseconds) {
@@ -309,18 +251,8 @@ public class Scheduler {
 
 		}else if(!backgroundProcessList.isEmpty()){
 			return this.backgroundProcessList.remove(0);
-		}
-
-
-
-		/*
-		 * check if sleeping list is not empty
-		 * 		return null
-		 * else
-		 * 		system exit
-		 * "return null"
-		 */
-		if(!sleepingProcessList.isEmpty()) {
+			
+		}else if(!sleepingProcessList.isEmpty()) {
 			return null;
 		}else {
 			System.exit(0);

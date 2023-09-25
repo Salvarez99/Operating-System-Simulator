@@ -9,13 +9,13 @@ public class World extends UserlandProcess{
 	@Override
 	public void run() {
 		
-		System.out.println("world");
-		
-		// OS.sleep(250);
-		
-		for (int i = 0; i < 5; i++) {
-			System.out.println("world " + (i + 1));
-		}
+		try {
+			while(true) {
+				System.out.println(" World");
+				OS.sleep(50); // sleep for 50 ms
+			}
+		} catch (Exception e) { }
+
 		
 	}
 }
