@@ -31,6 +31,6 @@ public class Main {
 		
 		//PID 6
 		//Process that calls OS.sleep intentionally
-		// OS.createProcess(slep, Priority.INTERACTIVE);
+		OS.createProcess(slep, Priority.INTERACTIVE);
 	}
 }
