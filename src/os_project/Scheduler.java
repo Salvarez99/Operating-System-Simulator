@@ -105,9 +105,16 @@ public class Scheduler {
 
 			wakeUp();
 
-			currentProcess.incrementTimeOut();
+			
+			if(currentProcess.getTimeOuts() < 5){
 
-			if(currentProcess.getTimeOuts()  == 5){
+				if(currentProcess.getPriority() != Priority.BACKGROUND){
+					currentProcess.incrementTimeOut();
+				}
+				System.out.println("Process: ID(" + currentProcess.getThreadPid() + ") Timeouts: " + currentProcess.getTimeOuts());
+
+			}else{
+				System.out.println("Process: ID(" + currentProcess.getThreadPid() + ") Timed Out: " + currentProcess.getTimeOuts());
 
 				if(currentProcess.getPriority() != Priority.BACKGROUND) {
 
@@ -295,14 +302,13 @@ public class Scheduler {
 
 		for(int i = 0; i < this.sleepingProcessList.size(); i++){
 			if(sleepingProcessList.get(i).getWakeTime() < getTime()){
-
+				
 				KernelandProcess awakenProcess = sleepingProcessList.get(i);
-				System.out.println("Waking Process: (" + awakenProcess.getThreadPid() + ")");
-				System.out.println("Process ID (" +  awakenProcess.getThreadPid() + ") wakeTime:" + awakenProcess.getWakeTime() + "ms");
-				System.out.println("Current Time: " + getTime() + "ms\n");
-
 				long diff = getTime() - awakenProcess.getWakeTime();
-				System.out.println("Time difference: " + diff + "ms\n");
+
+				System.out.print("Waking Process: (" + awakenProcess.getThreadPid() + ")\n");
+				System.out.println("Time elapsed from awaken period: " + diff + "ms");
+
 				appendToList(sleepingProcessList.remove(i));
 			}
 		}

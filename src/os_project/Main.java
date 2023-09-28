@@ -19,7 +19,7 @@ public class Main {
 		
 		//PID 3
 		//RealTime process runs long time but calls OS.sleep
-		OS.createProcess(world, Priority.REALTIME);
+		// OS.createProcess(world, Priority.REALTIME);
 		
 		//PID 4
 		//Interactive process runs long time but calls OS.sleep
@@ -31,6 +31,6 @@ public class Main {
 		
 		//PID 6
 		//Process that calls OS.sleep intentionally
-		// OS.createProcess(slep, Priority.INTERACTIVE);
+		OS.createProcess(slep, Priority.INTERACTIVE);
 	}
 }
