@@ -93,14 +93,6 @@ public class Scheduler {
 		//track condition for process demotion
 		//use random to pick which list the next process should be selected from
 
-
-		//TODO: Comment this out and see what happens
-		// while(!sleepingProcessList.isEmpty()){
-		// 	wakeUp();
-		// }
-
-
-
 		if(currentProcess != null){
 
 			wakeUp();
@@ -176,9 +168,6 @@ public class Scheduler {
 		long wakeTime = currentTime + milliseconds;
 		currentProcess.setWakeTime(wakeTime);
 
-		//TODO: Remove
-		// System.out.printf("Current time: %ld\n", currentTime);
-		// System.out.println("Current time: " + currentTime + "ms\n");
 		System.out.printf("Putting Process: (%d) to sleep for %dms \n", currentProcess.getThreadPid(), milliseconds);
 		currentProcess.setTimeOuts(0);
 		this.sleepingProcessList.add(this.currentProcess);
@@ -222,8 +211,6 @@ public class Scheduler {
 		 * 	  use first background process
 		 */
 		Random rand = new Random();
-		//TODO:Remove
-		// System.out.println("\nSelecting process from ");
 
 		if(!this.realTimeProcessList.isEmpty()) {
 			//generate random number between 0 and 9
