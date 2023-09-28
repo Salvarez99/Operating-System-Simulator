@@ -50,7 +50,7 @@ public class Scheduler {
 	 * @Param UserlandProcess up
 	 * @Return int newProcessPid
 	 */
-	public synchronized int createProcess(UserlandProcess up) {
+	public int createProcess(UserlandProcess up) {
 
 		KernelandProcess newProcess = new KernelandProcess(up);
 		appendToList(newProcess);
@@ -70,7 +70,7 @@ public class Scheduler {
 	 * @Param2 Priority priority
 	 * @Return int newProcessPid
 	 */
-	public synchronized int createProcess(UserlandProcess up, Priority priority) {
+	public int createProcess(UserlandProcess up, Priority priority) {
 
 		KernelandProcess newProcess = new KernelandProcess(up, priority);
 		appendToList(newProcess);
@@ -87,16 +87,17 @@ public class Scheduler {
 	 * Check if process is running. If yes, stop the process and add to process to end of list.
 	 * Then set current process to first process in the process list, run the process.  
 	 */
-	public synchronized void switchProcess() {
+	public void switchProcess() {
 
 		//when a process is stopped, it has to be placed in the correct list
 		//track condition for process demotion
 		//use random to pick which list the next process should be selected from
 
 
-		while(!sleepingProcessList.isEmpty()){
-			wakeUp();
-		}
+		//TODO: Comment this out and see what happens
+		// while(!sleepingProcessList.isEmpty()){
+		// 	wakeUp();
+		// }
 
 
 
@@ -150,7 +151,7 @@ public class Scheduler {
 		}
 	}
 
-	public synchronized void sleep(int milliseconds) {
+	public  void sleep(int milliseconds) {
 		//Need current time
 		//Requested amount of time to sleep, ^milliseconds
 		//Need minimum time to wake up, can only be awaken after this time not before it
@@ -168,7 +169,10 @@ public class Scheduler {
 		long wakeTime = currentTime + milliseconds;
 		currentProcess.setWakeTime(wakeTime);
 
-		System.out.println("Putting Process: (" + currentProcess.getThreadPid() + ") to sleep");
+		//TODO: Remove
+		// System.out.printf("Current time: %ld\n", currentTime);
+		// System.out.println("Current time: " + currentTime + "ms\n");
+		System.out.printf("Putting Process: (%d) to sleep for %dms \n", currentProcess.getThreadPid(), milliseconds);
 		currentProcess.setTimeOuts(0);
 		this.sleepingProcessList.add(this.currentProcess);
 		switchProcess();
@@ -196,7 +200,7 @@ public class Scheduler {
 		}
 	}
 
-	private synchronized KernelandProcess selectProcess() {
+	private KernelandProcess selectProcess() {
 		/*
 		 * if there are realTime processes
 		 * 	  select realTime process 6/10
@@ -211,30 +215,41 @@ public class Scheduler {
 		 * 	  use first background process
 		 */
 		Random rand = new Random();
-
+		//TODO:Remove
+		// System.out.println("\nSelecting process from ");
 
 		if(!this.realTimeProcessList.isEmpty()) {
 			//generate random number between 0 and 9
 			int select_1 = rand.nextInt(10);
 
 			if(select_1 <= 5) {
+				System.out.println("Selecting process from RealTime Processes\n");
 				return this.realTimeProcessList.remove(0);
 
 			}else if(select_1 <= 8) {
 
 				if(!interactiveProcessList.isEmpty()){
+					System.out.println("Selecting process from Interactive Processes\n");
 					return this.interactiveProcessList.remove(0);
+
 				}else if(!backgroundProcessList.isEmpty()){
+					System.out.println("Selecting process from Background Processes\n");
 					return backgroundProcessList.remove(0);
+
 				}else
+					System.out.println("Selecting process from RealTime Processes");
 					return this.realTimeProcessList.remove(0);
 
 			}else{
 
 				if(!backgroundProcessList.isEmpty()){
+					System.out.println("Selecting process from Background Processes\n");
 					return this.backgroundProcessList.remove(0);
+
 				}else 
+					System.out.println("Selecting process from RealTime Processes\n");
 					return realTimeProcessList.remove(0);
+
 			}
 
 		}else if(!this.interactiveProcessList.isEmpty()) {
@@ -243,16 +258,23 @@ public class Scheduler {
 			int select_2 = rand.nextInt(4);
 
 			if(select_2 <= 2){
-				return this.interactiveProcessList.remove(0);
-			}else if(!backgroundProcessList.isEmpty()) {
-				return this.backgroundProcessList.remove(0);
-			}else
+				System.out.print("Selecting process from Interactive Processes\n");
 				return this.interactiveProcessList.remove(0);
 
-		}else if(!backgroundProcessList.isEmpty()){
+			}else if(!backgroundProcessList.isEmpty()) {
+				System.out.print("Selecting process from Background Processes\n");
+				return this.backgroundProcessList.remove(0);
+
+			}else
+				System.out.print("Selecting process from Interactive Processes\n");
+				return this.interactiveProcessList.remove(0);
+
+		}else if(!backgroundProcessList.isEmpty()){	
+			System.out.print("Selecting process from Background Processes\n");
 			return this.backgroundProcessList.remove(0);
 			
 		}else if(!sleepingProcessList.isEmpty()) {
+			//TODO: Add print to check if this condition is met
 			return null;
 		}else {
 			System.exit(0);
@@ -265,7 +287,7 @@ public class Scheduler {
 	 * Iterate through sleeping list and wake processes ready to be awaken. Then check if list is empty or not.
 	 * Return True if there are no sleeping processes.
 	 */
-	private synchronized void wakeUp(){
+	private void wakeUp(){
 		/*
 		 * Look through sleeping list and see if any sleeping processes are ready to be awaken
 		 * then put them back into respective list
@@ -276,21 +298,30 @@ public class Scheduler {
 
 				KernelandProcess awakenProcess = sleepingProcessList.get(i);
 				System.out.println("Waking Process: (" + awakenProcess.getThreadPid() + ")");
+				System.out.println("Process ID (" +  awakenProcess.getThreadPid() + ") wakeTime:" + awakenProcess.getWakeTime() + "ms");
+				System.out.println("Current Time: " + getTime() + "ms\n");
+
+				long diff = getTime() - awakenProcess.getWakeTime();
+				System.out.println("Time difference: " + diff + "ms\n");
 				appendToList(sleepingProcessList.remove(i));
 			}
 		}
 	}
 
-	private synchronized void appendToList(KernelandProcess process) {
+	private void appendToList(KernelandProcess process) {
+
 		switch(process.getPriority()) {
 		case REALTIME:
 			realTimeProcessList.add(process);
+			System.out.printf("Adding Process: ID(%d) to RealTime Processes\n", process.getThreadPid());
 			break;
 		case INTERACTIVE:
 			interactiveProcessList.add(process);
+			System.out.printf("Adding Process: ID(%d) to Interactive Processes\n", process.getThreadPid());
 			break;
 		case BACKGROUND:
 			backgroundProcessList.add(process);
+			System.out.printf("Adding Process: ID(%d) to Background Processes\n", process.getThreadPid());
 			break;
 		default:
 			break;

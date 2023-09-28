@@ -46,7 +46,6 @@ public class KernelandProcess {
 		if (thread.isAlive()) {
 			try {
 				thread.suspend();
-				//TODO: Try object.wait()
 			}catch(Exception e) {};
 		}
 	}
@@ -78,13 +77,11 @@ public class KernelandProcess {
 	 */
 	@SuppressWarnings("removal")
 	public void run() {
-		//TODO: Comment out print statement later 
-		System.out.println(thread.getState());
+		System.out.println("Thread Status: " + thread.getState());
 		if (!isHasStarted() && thread.getState() == State.NEW) {
 			thread.start();
 			hasStarted = true;
 			
-		//TODO: add condition to look for runnable states
 		}else if(thread.getState() == Thread.State.WAITING || thread.getState() == Thread.State.RUNNABLE) {
 
 			try {

@@ -15,11 +15,11 @@ public class Main {
 		
 		//PID 2
 		//Runs long time intentionally 
-		OS.createProcess(goodbyeWorld, Priority.REALTIME); 
+		// OS.createProcess(goodbyeWorld, Priority.REALTIME); 
 		
 		//PID 3
 		//RealTime process runs long time but calls OS.sleep
-		// OS.createProcess(world, Priority.REALTIME);
+		OS.createProcess(world, Priority.REALTIME);
 		
 		//PID 4
 		//Interactive process runs long time but calls OS.sleep
