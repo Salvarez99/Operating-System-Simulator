@@ -1,7 +1,5 @@
 package os_project;
 
-import java.lang.Thread.State;
-
 public class KernelandProcess {
 
 	private static int nextpid = 2;
@@ -34,38 +32,57 @@ public class KernelandProcess {
 	}
 
 	/*
-	 * Retrieves pid
-	 * 
-	 * @Return int pid
+	 * resume or start, update started
+	 * Check if the current thread has not started. If true, start the thread
+	 * otherwise check if the
+	 * current thread is waiting. If true, resume the thread
 	 */
-	public int getThreadPid() {
-		return pid;
+	@SuppressWarnings("removal")
+	public void run() {
+		Thread.State prevState = thread.getState();
+		Thread.State currState = null;
+
+
+		if (!isHasStarted()) {
+			
+			// System.out.println("*****Starting a new thread: ID(" + thread.getId() + ")");
+			hasStarted = true;
+			running = true;
+			thread.start();
+
+			currState = thread.getState();
+
+		} else if (thread.isAlive()) {
+
+			running = true;
+			// System.out.println("*****Running thread: ID(" + thread.getId() + ")");
+			thread.resume();
+			currState = thread.getState();
+
+
+		}
+
+		if (currState != prevState) {
+			// System.out.println("*****Thread State("+ thread.getId() +") Changed: " + prevState + " -> " + currState);
+		}
+		
 	}
 
 	/*
 	 * Check if current process is alive. If yes, suspends the current process
 	 */
-	//TODO: Check stop() logic in debugging
 	@SuppressWarnings("removal")
 	public void stop() {
 		if (thread.isAlive() && isRunning()) {
-			// System.out.println("Stopping thread: ID(" + thread.getId() + ")");
-			// hasStarted = false;
 			running = false;
 			try {
-				System.out.println("Thread: ID(" + thread.getId() + ") has been suspended");
+				// System.out.println("*****Thread: ID(" + thread.getId() + ") has been suspended\n\n");
 				thread.suspend();
 			} catch (Exception e) {
-
-				System.out.println("Exception while suspending thread: " + e.getMessage());
+				System.out.println("*****Exception while suspending thread: " + e.getMessage());
 			}
 
-		} else {
-			System.out.println("Thread: ID(" + thread.getId() + ") was not stopped");
-			System.out.println("Thread: ID(" + thread.getId() + ") state: " + thread.getState());
-			System.out.println("Thread: ID(" + thread.getId() + ") isAlive(): " + thread.isAlive());
 		}
-
 	}
 
 	/*
@@ -74,7 +91,6 @@ public class KernelandProcess {
 	 * 
 	 * @Return boolean
 	 */
-	//TODO: Check isDone() logic in debugging
 	public boolean isDone() {
 		if (hasStarted && !thread.isAlive()) {
 			return true;
@@ -90,48 +106,21 @@ public class KernelandProcess {
 	}
 
 	/*
+	 * Retrieves pid
+	 * 
+	 * @Return int pid
+	 */
+	public int getThreadPid() {
+		return pid;
+	}
+
+	/*
 	 * Retrieves hasStarted
 	 * 
 	 * @Return boolean hasStarted
 	 */
 	public boolean isHasStarted() {
 		return hasStarted;
-	}
-
-	/*
-	 * resume or start, update started
-	 * Check if the current thread has not started. If true, start the thread
-	 * otherwise check if the
-	 * current thread is waiting. If true, resume the thread
-	 */
-	@SuppressWarnings("removal")
-	//TODO: Check logic for run() in debugging
-	public void run() {
-		Thread.State prevState = thread.getState();
-		System.out.println("Previous thread Status: " + prevState);
-
-		if (!isHasStarted() /* && thread.getState() == State.NEW */) {
-			System.out.println("Starting a new thread: ID(" + thread.getId() + ")");
-
-			hasStarted = true;
-			running = true;
-			thread.start();
-
-		} else if (thread.isAlive() /*
-									 * thread.getState() == Thread.State.WAITING || thread.getState() ==
-									 * Thread.State.RUNNABLE
-									 */) {
-
-			System.out.println("Running thread: ID(" + thread.getId() + ")");
-			running = true;
-			thread.resume();
-		}
-
-		Thread.State currState = thread.getState();
-		if (currState != prevState) {
-			System.out.println("Thread State Changed: " + prevState + " -> " + currState);
-		}
-
 	}
 
 	public Priority getPriority() {
