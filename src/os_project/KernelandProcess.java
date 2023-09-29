@@ -49,7 +49,7 @@ public class KernelandProcess {
 	@SuppressWarnings("removal")
 	public void stop() {
 		if (thread.isAlive() && isRunning()) {
-			System.out.println("Stopping thread: ID(" + thread.getId() + ")");
+			// System.out.println("Stopping thread: ID(" + thread.getId() + ")");
 			// hasStarted = false;
 			running = false;
 			try {
@@ -160,5 +160,9 @@ public class KernelandProcess {
 
 	public void incrementTimeOut() {
 		this.timeOuts++;
+	}
+
+	public Thread getThread() {
+		return this.thread;
 	}
 }
