@@ -84,9 +84,9 @@ public class KernelandProcess {
 			
 		}else if(thread.getState() == Thread.State.WAITING || thread.getState() == Thread.State.RUNNABLE) {
 
-			try {
+//			try {
 				thread.resume();
-			}catch(Exception e) {};
+//			}catch(Exception e) {};
 		}
 	}
 	
