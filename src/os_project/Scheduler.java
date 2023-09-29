@@ -125,6 +125,9 @@ public class Scheduler {
 				}
 			}
 
+			// TODO: Check logic in debugging
+			//Have you started? and are you finished with your task
+			//Can add conndition to see if process is running
 			if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
 
 				System.out.println("Process(" + currentProcess.getThreadPid() + "): Stopping\n");
@@ -139,11 +142,13 @@ public class Scheduler {
 					if (!temp.isDone()) {
 						appendToList(temp);
 					}
+					
 				}
-
+				currentProcess = selectProcess();
+				
 			}
-
-			currentProcess = selectProcess();
+			// TODO: Restore if incorrect
+			// currentProcess = selectProcess();
 
 			if (currentProcess != null) {
 				System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") ("
@@ -285,10 +290,7 @@ public class Scheduler {
 			System.out.print("Selecting process from Background Processes\n");
 			return this.backgroundProcessList.remove(0);
 
-		}
-
-		if (!sleepingProcessList.isEmpty()) {
-			// TODO: Add print to check if this condition is met
+		} else if (!sleepingProcessList.isEmpty()) {
 			System.out.println("Sleeping List is empty");
 			System.out.println("Null Process Returned");
 
