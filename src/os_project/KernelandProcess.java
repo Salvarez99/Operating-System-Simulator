@@ -113,8 +113,9 @@ public class KernelandProcess {
 		if (!isHasStarted() /* && thread.getState() == State.NEW */) {
 			System.out.println("Starting a new thread: ID(" + thread.getId() + ")");
 
-			thread.start();
 			hasStarted = true;
+			running = true;
+			thread.start();
 
 		} else if (thread.isAlive() /*
 									 * thread.getState() == Thread.State.WAITING || thread.getState() ==
