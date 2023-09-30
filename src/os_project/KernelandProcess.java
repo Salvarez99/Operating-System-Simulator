@@ -45,17 +45,17 @@ public class KernelandProcess {
 
 		if (!isHasStarted()) {
 			
-			// System.out.println("*****Starting a new thread: ID(" + thread.getId() + ")");
+			System.out.println("*****Starting a new thread: ID(" + thread.getId() + ")");
 			hasStarted = true;
 			running = true;
 			thread.start();
 
 			currState = thread.getState();
 
-		} else if (thread.isAlive()) {
+		} else if (thread.isAlive() && !isRunning()) {
 
 			running = true;
-			// System.out.println("*****Running thread: ID(" + thread.getId() + ")");
+			System.out.println("*****Running thread: ID(" + thread.getId() + ")");
 			thread.resume();
 			currState = thread.getState();
 
@@ -63,7 +63,8 @@ public class KernelandProcess {
 		}
 
 		if (currState != prevState) {
-			// System.out.println("*****Thread State("+ thread.getId() +") Changed: " + prevState + " -> " + currState);
+			currState = thread.getState();
+			System.out.println("*****Thread State("+ thread.getId() +") Changed: " + prevState + " -> " + currState);
 		}
 		
 	}
@@ -76,7 +77,7 @@ public class KernelandProcess {
 		if (thread.isAlive() && isRunning()) {
 			running = false;
 			try {
-				// System.out.println("*****Thread: ID(" + thread.getId() + ") has been suspended\n\n");
+				System.out.println("*****Thread: ID(" + thread.getId() + ") has been suspended\n\n");
 				thread.suspend();
 			} catch (Exception e) {
 				System.out.println("*****Exception while suspending thread: " + e.getMessage());
@@ -121,6 +122,10 @@ public class KernelandProcess {
 	 */
 	public boolean isHasStarted() {
 		return hasStarted;
+	}
+
+	public void setRunning(boolean running) {
+		this.running = running;
 	}
 
 	public Priority getPriority() {

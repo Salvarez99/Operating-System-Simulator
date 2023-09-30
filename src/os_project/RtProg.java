@@ -7,6 +7,7 @@ public class RtProg extends UserlandProcess{
         
         for(int i = 0; i < 10; i++){
             System.out.println("Give me a raise");
+            OS.sleep(50);
         }
     }
 }
