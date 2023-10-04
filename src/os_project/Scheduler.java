@@ -108,57 +108,37 @@ public class Scheduler {
 
 		if (currentProcess != null) {
 
-			if (currentProcess.getTimeOuts() < 5) {
-
-				if (currentProcess.getPriority() != Priority.BACKGROUND) {
-					currentProcess.incrementTimeOut();
-				}
-				System.out.println(
-						"Process: ID(" + currentProcess.getThreadPid() + ") Timeouts: " + currentProcess.getTimeOuts());
-
-			} else {
-
-				if (currentProcess.getPriority() != Priority.BACKGROUND) {
-
-					System.out.println("Process: ID(" + currentProcess.getThreadPid() + ") Timed Out: "
-							+ currentProcess.getTimeOuts());
-					demote(currentProcess);
-					currentProcess.setTimeOuts(0);
-				}
-			}
+			demotion();
 
 			// Have you started? and are you finished with your task
 			// Can add conndition to see if process is running
-			if (currentProcess != null) {
-				if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
+			// TODO: Remove null checks
+			// if (currentProcess != null) {
+			if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
 
-					// Stopping currentProcess
-					var temp = currentProcess;
-					currentProcess = null;
+				// Stopping currentProcess
+				var temp = currentProcess;
+				currentProcess = null;
 
-					if (temp != null) {
-						System.out.println("Process(" + temp.getThreadPid() + "): Stopping");
-						temp.stop();
+				// TODO: Remove null checks
+				// if (temp != null) {
+				System.out.println("Process(" + temp.getThreadPid() + "): Stopping");
+				temp.stop();
+				appendToList(temp);
+				// }
 
-						if (!temp.isDone()) {
-							appendToList(temp);
-						}
-
-					}
-
-				}
 			}
+			// }
 
 			currentProcess = selectProcess();
 
-			if (currentProcess != null) {
+			// TODO: (May need to stay) Remove null checks
+			// if (currentProcess != null) {
 
-				System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") ("
-						+ currentProcess.getPriority() + ")");
-				currentProcess.run();
-				// System.out.println("Thread(" + currentProcess.getThread().getId() + ") state
-				// after run: "+ currentProcess.getThread().getState());
-			}
+			System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") ("
+					+ currentProcess.getPriority() + ")");
+			currentProcess.run();
+			// }
 
 		} else {
 			// Either program state is in start up or no process is currently running
@@ -192,47 +172,16 @@ public class Scheduler {
 
 		long currentTime = getTime();
 		long wakeTime = currentTime + milliseconds;
-		int index = 0;
 
-		if (currentProcess != null) {
+		currentProcess.setWakeTime(wakeTime);
+		System.out.printf("Putting Process: (%d) to sleep for %dms \n", currentProcess.getThreadPid(), milliseconds);
+		currentProcess.setTimeOuts(0);
+		this.sleepingProcessList.add(this.currentProcess);
 
-			if (realTimeProcessList.contains(currentProcess)) {
-				index = realTimeProcessList.indexOf(currentProcess);
-				KernelandProcess sleepingProcess = realTimeProcessList.get(index);
-				sleepingProcess.setWakeTime(wakeTime);
-				realTimeProcessList.remove(sleepingProcess);
-				System.out.printf("Putting Process: (%d) to sleep for %dms \n",
-				sleepingProcess.getThreadPid(), milliseconds);
-				sleepingProcess.setTimeOuts(0);
-				this.sleepingProcessList.add(sleepingProcess);
+		var temp = currentProcess;
+		currentProcess = null;
+		temp.stop();
 
-			} else if (interactiveProcessList.contains(currentProcess)) {
-				index = interactiveProcessList.indexOf(currentProcess);
-				KernelandProcess sleepingProcess = interactiveProcessList.get(index);
-				sleepingProcess.setWakeTime(wakeTime);
-				interactiveProcessList.remove(sleepingProcess);
-				System.out.printf("Putting Process: (%d) to sleep for %dms \n",
-				sleepingProcess.getThreadPid(),milliseconds);
-				sleepingProcess.setTimeOuts(0);
-				this.sleepingProcessList.add(sleepingProcess);
-
-			} else if (backgroundProcessList.contains(currentProcess)) {
-				index = backgroundProcessList.indexOf(currentProcess);
-				KernelandProcess sleepingProcess = backgroundProcessList.get(index);
-				sleepingProcess.setWakeTime(wakeTime);
-				backgroundProcessList.remove(sleepingProcess);
-				System.out.printf("Putting Process: (%d) to sleep for %dms \n",
-				sleepingProcess.getThreadPid(),milliseconds);
-				sleepingProcess.setTimeOuts(0);
-				this.sleepingProcessList.add(sleepingProcess);
-			} else {
-				currentProcess.setWakeTime(wakeTime);
-				System.out.printf("Putting Process: (%d) to sleep for %dms \n",
-				currentProcess.getThreadPid(),milliseconds);
-				currentProcess.setTimeOuts(0);
-				this.sleepingProcessList.add(this.currentProcess);
-			}
-		}
 		switchProcess();
 	}
 
@@ -258,6 +207,27 @@ public class Scheduler {
 			default:
 				break;
 		}
+	}
+
+	private void demotion(){
+			if (currentProcess.getTimeOuts() < 5) {
+
+				if (currentProcess.getPriority() != Priority.BACKGROUND) {
+					currentProcess.incrementTimeOut();
+				}
+				System.out.println(
+						"Process: ID(" + currentProcess.getThreadPid() + ") Timeouts: " + currentProcess.getTimeOuts());
+
+			} else {
+
+				if (currentProcess.getPriority() != Priority.BACKGROUND) {
+
+					System.out.println("Process: ID(" + currentProcess.getThreadPid() + ") Timed Out: "
+							+ currentProcess.getTimeOuts());
+					demote(currentProcess);
+					currentProcess.setTimeOuts(0);
+				}
+			}
 	}
 
 	private KernelandProcess selectProcess() {
@@ -375,17 +345,17 @@ public class Scheduler {
 			case REALTIME:
 				realTimeProcessList.add(process);
 				System.out.printf("Adding Process: ID(%d) to RealTime Processes\n",
-				process.getThreadPid());
+						process.getThreadPid());
 				break;
 			case INTERACTIVE:
 				interactiveProcessList.add(process);
 				System.out.printf("Adding Process: ID(%d) to Interactive Processes\n",
-				process.getThreadPid());
+						process.getThreadPid());
 				break;
 			case BACKGROUND:
 				backgroundProcessList.add(process);
 				System.out.printf("Adding Process: ID(%d) to Background Processes\n",
-				process.getThreadPid());
+						process.getThreadPid());
 				break;
 			default:
 				break;
