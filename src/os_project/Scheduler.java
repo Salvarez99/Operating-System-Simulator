@@ -112,33 +112,24 @@ public class Scheduler {
 
 			// Have you started? and are you finished with your task
 			// Can add conndition to see if process is running
-			// TODO: Remove null checks
-			// if (currentProcess != null) {
 			if (!currentProcess.isDone() && currentProcess.isHasStarted()) {
 
 				// Stopping currentProcess
 				var temp = currentProcess;
 				currentProcess = null;
 
-				// TODO: Remove null checks
-				// if (temp != null) {
 				System.out.println("Process(" + temp.getThreadPid() + "): Stopping");
 				temp.stop();
+				
 				appendToList(temp);
-				// }
 
 			}
-			// }
 
 			currentProcess = selectProcess();
-
-			// TODO: (May need to stay) Remove null checks
-			// if (currentProcess != null) {
 
 			System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") ("
 					+ currentProcess.getPriority() + ")");
 			currentProcess.run();
-			// }
 
 		} else {
 			// Either program state is in start up or no process is currently running
