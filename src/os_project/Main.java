@@ -6,31 +6,24 @@ public class Main {
 		
 		UserlandProcess helloworld = new HelloWorld();
 		UserlandProcess goodbyeWorld = new GoodbyeWorld();
-		UserlandProcess world = new World();
-		UserlandProcess slep = new Sleep500();
+		UserlandProcess realProgram = new RtProg();
+		UserlandProcess interactiveProgram = new ItProg();
+		UserlandProcess backgroundProgram = new BgProg();
+		UserlandProcess sleepingProcess = new Sleep500();
+
+
+
 		
 		//PID 1
 		//Runs long time intentionally
 		OS.startUp(helloworld);
-		
 		//PID 2
-		//Runs long time intentionally 
-		// OS.createProcess(goodbyeWorld, Priority.REALTIME); 
-		
+		OS.createProcess(realProgram, Priority.REALTIME);
 		//PID 3
-		//RealTime process runs long time but calls OS.sleep
-		OS.createProcess(world, Priority.REALTIME);
-		
+		OS.createProcess(sleepingProcess, Priority.INTERACTIVE);
 		//PID 4
-		//Interactive process runs long time but calls OS.sleep
-		// OS.createProcess(world, Priority.INTERACTIVE);
+		OS.createProcess(backgroundProgram,Priority.BACKGROUND);
 		
-		//PID 5
-		//Background process runs long time but calls OS.sleep
-		// OS.createProcess(world, Priority.BACKGROUND);
-		
-		//PID 6
-		//Process that calls OS.sleep intentionally
-		OS.createProcess(slep, Priority.INTERACTIVE);
+
 	}
 }
