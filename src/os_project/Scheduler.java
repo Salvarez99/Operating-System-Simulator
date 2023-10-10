@@ -28,7 +28,7 @@ public class Scheduler {
 	private List<KernelandProcess> interactiveProcessList = new LinkedList<KernelandProcess>();
 	private List<KernelandProcess> backgroundProcessList = new LinkedList<KernelandProcess>();
 	private List<KernelandProcess> sleepingProcessList = new LinkedList<KernelandProcess>();
-	private KernelandProcess currentProcess;
+	private static KernelandProcess currentProcess;
 	private Interrupt interrupt;
 	private Timer timer;
 	private Clock clock;
@@ -174,6 +174,10 @@ public class Scheduler {
 		temp.stop();
 
 		switchProcess();
+	}
+
+	public static KernelandProcess getCurrentlyRunning(){
+		return Scheduler.currentProcess;
 	}
 
 	public long getTime() {

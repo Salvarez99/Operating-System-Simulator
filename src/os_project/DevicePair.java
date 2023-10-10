@@ -1,8 +1,11 @@
 package os_project;
 
 public class DevicePair {
-    Device device;
-    int id;
+    private Device device;
+    private int id;
+
+    public DevicePair() {
+    }
 
     public DevicePair(Device device, int id) {
         this.device = device;

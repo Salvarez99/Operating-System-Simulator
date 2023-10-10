@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class RandomDevice implements Device {
 
-    Random[] devices;
+    private Random[] devices;
 
     public RandomDevice() {
         this.devices = new Random[10];

@@ -5,8 +5,7 @@ import java.io.RandomAccessFile;
 
 public class FakeFileSystem implements Device {
 
-    RandomAccessFile[] fileArray;
-    String filename;
+    private RandomAccessFile[] fileArray;
 
     public FakeFileSystem() {
         this.fileArray = new RandomAccessFile[10];
@@ -17,7 +16,7 @@ public class FakeFileSystem implements Device {
     public int Open(String s) {
         int id;
 
-        if (filename.isEmpty() || filename == null) {
+        if (s.isEmpty() || s == null) {
             try {
                 throw new Exception("filename is empty or null");
             } catch (Exception e) {
@@ -49,8 +48,7 @@ public class FakeFileSystem implements Device {
         try {
             fileArray[id].close();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.out.println("Error occured in FFS.Close()");
         }
 
         for (int i = 0; i < this.fileArray.length; i++) {
@@ -95,9 +93,7 @@ public class FakeFileSystem implements Device {
         try {
             this.fileArray[id].seek(to);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            System.out.println("Error occured in FFS.Seek()");
         }
     }
-
 }

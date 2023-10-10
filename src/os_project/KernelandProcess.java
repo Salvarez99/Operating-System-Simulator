@@ -10,6 +10,7 @@ public class KernelandProcess {
 	private long wakeTime;
 	private int timeOuts;
 	private boolean running;
+	private int[] deviceIds;
 
 	public KernelandProcess(UserlandProcess up) {
 		this.pid = KernelandProcess.nextpid - 1;
@@ -19,6 +20,7 @@ public class KernelandProcess {
 		this.thread = new Thread(up);
 		this.priority = Priority.INTERACTIVE;
 		this.timeOuts = 0;
+		this.deviceIds = new int[10];
 	}
 
 	public KernelandProcess(UserlandProcess up, Priority priority) {
@@ -29,6 +31,8 @@ public class KernelandProcess {
 		this.thread = new Thread(up);
 		this.priority = priority;
 		this.timeOuts = 0;
+		this.deviceIds = new int[10];
+
 	}
 
 	/*
@@ -42,9 +46,8 @@ public class KernelandProcess {
 		Thread.State prevState = thread.getState();
 		Thread.State currState = null;
 
-
 		if (!isHasStarted()) {
-			
+
 			System.out.println("*****Starting a new thread: ID(" + thread.getId() + ")");
 			hasStarted = true;
 			running = true;
@@ -59,14 +62,13 @@ public class KernelandProcess {
 			thread.resume();
 			currState = thread.getState();
 
-
 		}
 
 		if (currState != prevState) {
 			currState = thread.getState();
-			System.out.println("*****Thread State("+ thread.getId() +") Changed: " + prevState + " -> " + currState);
+			System.out.println("*****Thread State(" + thread.getId() + ") Changed: " + prevState + " -> " + currState);
 		}
-		
+
 	}
 
 	/*
@@ -104,6 +106,14 @@ public class KernelandProcess {
 			return true;
 		}
 		return false;
+	}
+
+	public int[] getDeviceIds() {
+		return deviceIds;
+	}
+
+	public void setDeviceIds(int[] deviceIds) {
+		this.deviceIds = deviceIds;
 	}
 
 	/*
