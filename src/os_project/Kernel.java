@@ -2,6 +2,7 @@ package os_project;
 
 public class Kernel implements Device {
 	private static Scheduler scheduler = new Scheduler();
+	private VFS vfs = new VFS();
 
 	public Kernel() {
 	}
@@ -20,15 +21,14 @@ public class Kernel implements Device {
 
 	@Override
 	public int Open(String s) {
-		KernelandProcess currentProcess = Scheduler.getCurrentlyRunning();
+		KernelandProcess currentProcess = scheduler.getCurrentlyRunning();
 		int[] cpDeviceIds = currentProcess.getDeviceIds();
-		VFS vfs = new VFS();
 		int vfsId;
 
 		// Check for open index, otherwise return failure
 		for (int i = 0; i < cpDeviceIds.length; i++) {
 			if (cpDeviceIds[i] == -1) {
-				vfsId = vfs.Open(s);
+				vfsId = this.vfs.Open(s);
 				cpDeviceIds[i] = vfsId;
 				return i;
 			}
@@ -44,16 +44,33 @@ public class Kernel implements Device {
 
 	@Override
 	public byte[] Read(int id, int size) {
-		
+		KernelandProcess currentProcess = scheduler.getCurrentlyRunning();
+		int[] cpDeviceIds = currentProcess.getDeviceIds();
+		int vfsId = cpDeviceIds[id];
+		byte[] bArray = this.vfs.Read(vfsId, size);
+		return bArray;
 	}
 
 	@Override
 	public int Write(int id, byte[] data) {
 
+		if (data.length > 0) {
+			KernelandProcess currentProcess = scheduler.getCurrentlyRunning();
+			int[] cpDeviceIds = currentProcess.getDeviceIds();
+			int vfsId = cpDeviceIds[id];
+			this.vfs.Write(vfsId, data);
+			return data.length;
+		}
+
+		return 0;
 	}
 
 	@Override
 	public void Seek(int id, int to) {
+		KernelandProcess currentProcess = scheduler.getCurrentlyRunning();
+		int[] cpDeviceIds = currentProcess.getDeviceIds();
 
+		int vfsId = cpDeviceIds[id];
+		this.vfs.Seek(vfsId, to);
 	}
 }

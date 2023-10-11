@@ -28,7 +28,7 @@ public class Scheduler {
 	private List<KernelandProcess> interactiveProcessList = new LinkedList<KernelandProcess>();
 	private List<KernelandProcess> backgroundProcessList = new LinkedList<KernelandProcess>();
 	private List<KernelandProcess> sleepingProcessList = new LinkedList<KernelandProcess>();
-	private static KernelandProcess currentProcess; // TODO: Made currentProcess static
+	private KernelandProcess currentProcess;
 	private Interrupt interrupt;
 	private Timer timer;
 	private Clock clock;
@@ -167,9 +167,7 @@ public class Scheduler {
 		currentProcess.setWakeTime(wakeTime);
 		System.out.printf("Putting Process: (%d) to sleep for %dms \n", currentProcess.getThreadPid(), milliseconds);
 		currentProcess.setTimeOuts(0);
-		// TODO: Accessing currentProcess statically
-		this.sleepingProcessList.add(Scheduler.currentProcess);
-
+		this.sleepingProcessList.add(this.currentProcess);
 		var temp = currentProcess;
 		currentProcess = null;
 		temp.stop();
@@ -177,8 +175,8 @@ public class Scheduler {
 		switchProcess();
 	}
 
-	public static KernelandProcess getCurrentlyRunning() {
-		return Scheduler.currentProcess;
+	public KernelandProcess getCurrentlyRunning() {
+		return this.currentProcess;
 	}
 
 	public long getTime() {
