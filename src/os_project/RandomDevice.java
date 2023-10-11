@@ -42,7 +42,7 @@ public class RandomDevice implements Device {
         this.devices[id] = null;
     }
 
-    // TODO: Could be right or wrong
+    // TODO: Check
     @Override
     public byte[] Read(int id, int size) {
         byte[] bArray = new byte[size];
@@ -58,7 +58,7 @@ public class RandomDevice implements Device {
         return data.length;
     }
 
-    // TODO: Not sure what to do
+    // TODO: Check
     @Override
     public void Seek(int id, int to) {
         

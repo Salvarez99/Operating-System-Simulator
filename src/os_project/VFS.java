@@ -3,7 +3,6 @@ package os_project;
 public class VFS implements Device {
     private DevicePair[] devices;
 
-    
     public VFS() {
         this.devices = new DevicePair[10];
     }
@@ -40,9 +39,10 @@ public class VFS implements Device {
 
     @Override
     public void Close(int id) {
-
+        this.devices[id] = null;
     }
 
+    // Hopefully passing to proper device
     @Override
     public byte[] Read(int id, int size) {
         Device dev = this.devices[id].getDevice();
@@ -51,6 +51,7 @@ public class VFS implements Device {
         return bArray;
     }
 
+    // Hopefully passing to proper device
     @Override
     public int Write(int id, byte[] data) {
 
@@ -64,6 +65,7 @@ public class VFS implements Device {
         return 0;
     }
 
+    // Hopefully passing to proper device
     @Override
     public void Seek(int id, int to) {
         Device dev = this.devices[id].getDevice();
@@ -71,7 +73,7 @@ public class VFS implements Device {
         dev.Seek(devId, to);
     }
 
-    private  boolean search(DevicePair pair) {
+    private boolean search(DevicePair pair) {
         for (int i = 0; i < devices.length; i++) {
             if (devices[i] == null) {
                 devices[i] = pair;
@@ -80,5 +82,4 @@ public class VFS implements Device {
         }
         return false;
     }
-
 }

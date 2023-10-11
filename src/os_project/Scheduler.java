@@ -28,7 +28,7 @@ public class Scheduler {
 	private List<KernelandProcess> interactiveProcessList = new LinkedList<KernelandProcess>();
 	private List<KernelandProcess> backgroundProcessList = new LinkedList<KernelandProcess>();
 	private List<KernelandProcess> sleepingProcessList = new LinkedList<KernelandProcess>();
-	private static KernelandProcess currentProcess;
+	private static KernelandProcess currentProcess; // TODO: Made currentProcess static
 	private Interrupt interrupt;
 	private Timer timer;
 	private Clock clock;
@@ -120,7 +120,7 @@ public class Scheduler {
 
 				System.out.println("Process(" + temp.getThreadPid() + "): Stopping");
 				temp.stop();
-				
+
 				appendToList(temp);
 
 			}
@@ -167,7 +167,8 @@ public class Scheduler {
 		currentProcess.setWakeTime(wakeTime);
 		System.out.printf("Putting Process: (%d) to sleep for %dms \n", currentProcess.getThreadPid(), milliseconds);
 		currentProcess.setTimeOuts(0);
-		this.sleepingProcessList.add(this.currentProcess);
+		// TODO: Accessing currentProcess statically
+		this.sleepingProcessList.add(Scheduler.currentProcess);
 
 		var temp = currentProcess;
 		currentProcess = null;
@@ -176,7 +177,7 @@ public class Scheduler {
 		switchProcess();
 	}
 
-	public static KernelandProcess getCurrentlyRunning(){
+	public static KernelandProcess getCurrentlyRunning() {
 		return Scheduler.currentProcess;
 	}
 
@@ -204,25 +205,25 @@ public class Scheduler {
 		}
 	}
 
-	private void demotion(){
-			if (currentProcess.getTimeOuts() < 5) {
+	private void demotion() {
+		if (currentProcess.getTimeOuts() < 5) {
 
-				if (currentProcess.getPriority() != Priority.BACKGROUND) {
-					currentProcess.incrementTimeOut();
-				}
-				System.out.println(
-						"Process: ID(" + currentProcess.getThreadPid() + ") Timeouts: " + currentProcess.getTimeOuts());
-
-			} else {
-
-				if (currentProcess.getPriority() != Priority.BACKGROUND) {
-
-					System.out.println("Process: ID(" + currentProcess.getThreadPid() + ") Timed Out: "
-							+ currentProcess.getTimeOuts());
-					demote(currentProcess);
-					currentProcess.setTimeOuts(0);
-				}
+			if (currentProcess.getPriority() != Priority.BACKGROUND) {
+				currentProcess.incrementTimeOut();
 			}
+			System.out.println(
+					"Process: ID(" + currentProcess.getThreadPid() + ") Timeouts: " + currentProcess.getTimeOuts());
+
+		} else {
+
+			if (currentProcess.getPriority() != Priority.BACKGROUND) {
+
+				System.out.println("Process: ID(" + currentProcess.getThreadPid() + ") Timed Out: "
+						+ currentProcess.getTimeOuts());
+				demote(currentProcess);
+				currentProcess.setTimeOuts(0);
+			}
+		}
 	}
 
 	private KernelandProcess selectProcess() {

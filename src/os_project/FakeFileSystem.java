@@ -11,48 +11,36 @@ public class FakeFileSystem implements Device {
         this.fileArray = new RandomAccessFile[10];
     }
 
-    // TODO: Ask about throwing here
     @Override
     public int Open(String s) {
         int id;
 
-        if (s.isEmpty() || s == null) {
+        if (!s.isEmpty() || s != null) {
             try {
-                throw new Exception("filename is empty or null");
-            } catch (Exception e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-
-        try {
-            RandomAccessFile newFile = new RandomAccessFile(s, "rw");
-
-            for (int i = 0; i < fileArray.length; i++) {
-                if (fileArray[i] == null) {
-                    fileArray[i] = newFile;
-                    id = i;
-                    return id;
+                try (RandomAccessFile newFile = new RandomAccessFile(s, "rw")) {
+                    for (int i = 0; i < fileArray.length; i++) {
+                        if (fileArray[i] == null) {
+                            fileArray[i] = newFile;
+                            id = i;
+                            return id;
+                        }
+                    }
                 }
+            } catch (Exception e) {
+                return -1;
             }
-        } catch (Exception e) {
-            return -1;
         }
 
         return -1;
     }
 
-    // TODO: May or may not be correct
     @Override
     public void Close(int id) {
         try {
             fileArray[id].close();
+            fileArray[id] = null;
         } catch (IOException e) {
             System.out.println("Error occured in FFS.Close()");
-        }
-
-        for (int i = 0; i < this.fileArray.length; i++) {
-            fileArray[i] = null;
         }
     }
 
@@ -69,7 +57,7 @@ public class FakeFileSystem implements Device {
         return bArray;
     }
 
-    // TODO:May or may not be correct
+    // TODO:Check
     @Override
     public int Write(int id, byte[] data) {
 
@@ -86,10 +74,9 @@ public class FakeFileSystem implements Device {
         return 0;
     }
 
-    // TODO: Not sure what to do
+    // TODO: Check
     @Override
     public void Seek(int id, int to) {
-
         try {
             this.fileArray[id].seek(to);
         } catch (IOException e) {

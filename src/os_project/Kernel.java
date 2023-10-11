@@ -18,31 +18,23 @@ public class Kernel implements Device {
 		scheduler.sleep(milliseconds);
 	}
 
-	// TODO: Decipher this
 	@Override
 	public int Open(String s) {
 		KernelandProcess currentProcess = Scheduler.getCurrentlyRunning();
-		int[] deviceIds = currentProcess.getDeviceIds();
+		int[] cpDeviceIds = currentProcess.getDeviceIds();
 		VFS vfs = new VFS();
-		int id;
+		int vfsId;
 
-		for (int i = 0; i < deviceIds.length; i++) {
-			if (deviceIds[i] == -1) {
-				id = vfs.Open(s);
-
-				if (id == -1) {
-					return -1;
-				} else {
-					deviceIds[i] = id;
-
-					return id;
-				}
-			} else {
-				return -1;
-				// call here
+		// Check for open index, otherwise return failure
+		for (int i = 0; i < cpDeviceIds.length; i++) {
+			if (cpDeviceIds[i] == -1) {
+				vfsId = vfs.Open(s);
+				cpDeviceIds[i] = vfsId;
+				return i;
 			}
 		}
 
+		return -1;
 	}
 
 	@Override
@@ -52,7 +44,7 @@ public class Kernel implements Device {
 
 	@Override
 	public byte[] Read(int id, int size) {
-
+		
 	}
 
 	@Override
