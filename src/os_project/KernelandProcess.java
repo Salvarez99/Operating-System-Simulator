@@ -10,7 +10,7 @@ public class KernelandProcess {
 	private long wakeTime;
 	private int timeOuts;
 	private boolean running;
-	private int[] deviceIds;
+	private int[] deviceIds = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
 
 	public KernelandProcess(UserlandProcess up) {
 		this.pid = KernelandProcess.nextpid - 1;
@@ -20,7 +20,7 @@ public class KernelandProcess {
 		this.thread = new Thread(up);
 		this.priority = Priority.INTERACTIVE;
 		this.timeOuts = 0;
-		this.deviceIds = new int[10];
+		// this.deviceIds = new int[10];
 	}
 
 	public KernelandProcess(UserlandProcess up, Priority priority) {

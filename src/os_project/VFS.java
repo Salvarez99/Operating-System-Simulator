@@ -17,8 +17,9 @@ public class VFS implements Device {
         if (strings[0].equals("random")) {
             RandomDevice device = new RandomDevice();
             id = device.Open(strings[1]);
-            pair.setDevice(device);
-            pair.setId(id);
+            pair = new DevicePair(device, id);
+            // pair.setDevice(device);
+            // pair.setId(id);
 
             if (search(pair)) {
                 return id;
@@ -27,8 +28,9 @@ public class VFS implements Device {
         } else if (strings[0].equals("file")) {
             FakeFileSystem device = new FakeFileSystem();
             id = device.Open(strings[1]);
-            pair.setDevice(device);
-            pair.setId(id);
+            pair = new DevicePair(device, id);
+            // pair.setDevice(device);
+            // pair.setId(id);
 
             if (search(pair)) {
                 return id;
@@ -43,6 +45,7 @@ public class VFS implements Device {
     }
 
     // Hopefully passing to proper device
+    // If not check instance of device and run code for respective device
     @Override
     public byte[] Read(int id, int size) {
         Device dev = this.devices[id].getDevice();
@@ -52,6 +55,7 @@ public class VFS implements Device {
     }
 
     // Hopefully passing to proper device
+    // If not check instance of device and run code for respective device
     @Override
     public int Write(int id, byte[] data) {
 
@@ -61,7 +65,6 @@ public class VFS implements Device {
             dev.Write(devId, data);
             return data.length;
         }
-
         return 0;
     }
 

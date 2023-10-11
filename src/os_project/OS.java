@@ -51,5 +51,4 @@ public class OS implements Device { // supposed to be static
 	public void Seek(int id, int to) {
 		kernel.Seek(id, to);
 	}
-
 }

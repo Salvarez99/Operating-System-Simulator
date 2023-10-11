@@ -61,8 +61,6 @@ public class RandomDevice implements Device {
     // TODO: Check
     @Override
     public void Seek(int id, int to) {
-        
         Read(id,to);
-
     }
 }

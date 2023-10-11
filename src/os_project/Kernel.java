@@ -33,13 +33,18 @@ public class Kernel implements Device {
 				return i;
 			}
 		}
-
 		return -1;
 	}
 
 	@Override
 	public void Close(int id) {
-
+		KernelandProcess currentProcess = scheduler.getCurrentlyRunning();
+		int[] cpDeviceIds = currentProcess.getDeviceIds();
+		int vfsId = cpDeviceIds[id];
+		cpDeviceIds[id] = -1;
+		// TODO: may not set actual cp array
+		currentProcess.setDeviceIds(cpDeviceIds);
+		vfs.Close(vfsId);
 	}
 
 	@Override
