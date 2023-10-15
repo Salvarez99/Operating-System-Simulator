@@ -18,11 +18,11 @@ public class Main {
 		//Runs long time intentionally
 		OS.startUp(helloworld);
 		//PID 2
-		OS.createProcess(realProgram, Priority.REALTIME);
+		// OS.createProcess(realProgram, Priority.REALTIME);
 		//PID 3
-		OS.createProcess(sleepingProcess, Priority.INTERACTIVE);
+		// OS.createProcess(sleepingProcess, Priority.INTERACTIVE);
 		//PID 4
-		OS.createProcess(backgroundProgram,Priority.BACKGROUND);
+		// OS.createProcess(backgroundProgram,Priority.BACKGROUND);
 		
 
 	}

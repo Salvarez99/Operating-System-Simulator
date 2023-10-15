@@ -1,6 +1,6 @@
 package os_project;
 
-public class OS implements Device { // supposed to be static
+public class OS { // supposed to be static
 
 	private static Kernel kernel;
 
@@ -27,28 +27,23 @@ public class OS implements Device { // supposed to be static
 		Kernel.sleep(milliseconds);
 	}
 
-	@Override
-	public int Open(String s) {
+	public static int Open(String s) {
 		return kernel.Open(s);
 	}
 
-	@Override
-	public void Close(int id) {
+	public static void Close(int id) {
 		kernel.Close(id);
 	}
 
-	@Override
-	public byte[] Read(int id, int size) {
+	public static byte[] Read(int id, int size) {
 		return kernel.Read(id, size);
 	}
 
-	@Override
-	public int Write(int id, byte[] data) {
+	public static int Write(int id, byte[] data) {
 		return kernel.Write(id, data);
 	}
 
-	@Override
-	public void Seek(int id, int to) {
+	public static void Seek(int id, int to) {
 		kernel.Seek(id, to);
 	}
 }

@@ -22,6 +22,7 @@ public class FakeFileSystem implements Device {
                         if (fileArray[i] == null) {
                             fileArray[i] = newFile;
                             id = i;
+                            System.out.println("FFS Open: file array[" + id + "]");
                             return id;
                         }
                     }
@@ -36,7 +37,9 @@ public class FakeFileSystem implements Device {
 
     @Override
     public void Close(int id) {
+        System.out.println("FFS Close");
         try {
+            System.out.println("FFS Close: file array[" + id + "]");
             fileArray[id].close();
             fileArray[id] = null;
         } catch (IOException e) {
@@ -49,6 +52,7 @@ public class FakeFileSystem implements Device {
         byte[] bArray = new byte[size];
 
         try {
+            System.out.println("FFS Read: file array[" + id + "]");
             fileArray[id].read(bArray);
         } catch (IOException e) {
             System.out.println("Error occured in FFS.Read()");
@@ -63,6 +67,7 @@ public class FakeFileSystem implements Device {
 
         if (data.length > 0) {
             try {
+                System.out.println("FFS Write: file array[" + id + "]");
                 this.fileArray[id].write(data);
                 return data.length;
 
@@ -74,10 +79,10 @@ public class FakeFileSystem implements Device {
         return 0;
     }
 
-    // TODO: Check
     @Override
     public void Seek(int id, int to) {
         try {
+            System.out.println("FFS Seek: file array[" + id + "]");
             this.fileArray[id].seek(to);
         } catch (IOException e) {
             System.out.println("Error occured in FFS.Seek()");

@@ -13,7 +13,7 @@ public class RandomDevice implements Device {
     @Override
     public int Open(String s) {
 
-        Random device;
+        Random device = new Random();
         int id;
 
         if (!s.isEmpty() || s != null) {
@@ -22,14 +22,12 @@ public class RandomDevice implements Device {
             device = new Random(seed);
         }
 
-        device = new Random();
-
         for (int i = 0; i < this.devices.length; i++) {
 
             if (devices[i] == null) {
-
                 devices[i] = device;
                 id = i;
+                System.out.println("Random Open: rdArray[" + id + "]");
                 return id;
             }
 
@@ -39,6 +37,7 @@ public class RandomDevice implements Device {
 
     @Override
     public void Close(int id) {
+        System.out.println("Random Close: rdArray[" + id + "]");
         this.devices[id] = null;
     }
 
@@ -46,7 +45,7 @@ public class RandomDevice implements Device {
     @Override
     public byte[] Read(int id, int size) {
         byte[] bArray = new byte[size];
-
+        System.out.println("Random Read: rdArray[" + id + "]");
         this.devices[id].nextBytes(bArray);
 
         return bArray;
@@ -54,13 +53,14 @@ public class RandomDevice implements Device {
 
     @Override
     public int Write(int id, byte[] data) {
-
+        System.out.println("Random Write: rdArray[" + id + "]");
         return data.length;
     }
 
     // TODO: Check
     @Override
     public void Seek(int id, int to) {
-        Read(id,to);
+        System.out.println("Random Read: rdArray[" + id + "]");
+        Read(id, to);
     }
 }

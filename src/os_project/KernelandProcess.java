@@ -31,7 +31,7 @@ public class KernelandProcess {
 		this.thread = new Thread(up);
 		this.priority = priority;
 		this.timeOuts = 0;
-		this.deviceIds = new int[10];
+		// this.deviceIds = new int[10];
 
 	}
 

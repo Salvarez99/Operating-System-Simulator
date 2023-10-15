@@ -7,8 +7,6 @@ public class HelloWorld extends UserlandProcess{
 	
 	@Override
 	public void run() {
-		
-		OS os = new OS();
 		// try {
 		// 	while(true) {
 		// 		System.out.println("Hello World");
@@ -16,9 +14,12 @@ public class HelloWorld extends UserlandProcess{
 
 		// 	}
 		// } catch (Exception e) { }
-		int id = os.Open("random 100");
-		os.Read(id, 10);
-		os.Close(id);
-		
+
+		byte[] bArray = "HelloWorld".getBytes();
+
+		int id = OS.Open("file data.txt");
+		OS.Write(id, bArray);
+		OS.Read(id, 10);
+		OS.Close(id);
 	}
 }
