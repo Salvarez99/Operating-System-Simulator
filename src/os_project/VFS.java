@@ -2,12 +2,21 @@ package os_project;
 
 public class VFS implements Device {
     private DevicePair[] devices;
+    private RandomDevice randDevice;
+    private FakeFileSystem fakeFileSys;
 
     public VFS() {
         this.devices = new DevicePair[10];
+        this.randDevice = new RandomDevice();
+        this.fakeFileSys = new FakeFileSystem();
     }
 
-    // TODO: may not need to set pair device and id
+    /*
+     * Uses string input to decide which device to open, then calls respective open on it. 
+     * Updates device list with new opened device and returns it's index
+     * @Param: String s
+     * @Return: int id, device index position
+     */
     @Override
     public int Open(String s) {
         String[] strings = s.split(" ");
@@ -15,22 +24,16 @@ public class VFS implements Device {
         int id;
 
         if (strings[0].equals("random")) {
-            RandomDevice device = new RandomDevice();
-            id = device.Open(strings[1]);
-            pair = new DevicePair(device, id);
-            // pair.setDevice(device);
-            // pair.setId(id);
+            id = this.randDevice.Open(strings[1]);
+            pair = new DevicePair(this.randDevice, id);
 
             if (search(pair)) {
                 return id;
             }
 
         } else if (strings[0].equals("file")) {
-            FakeFileSystem device = new FakeFileSystem();
-            id = device.Open(strings[1]);
-            pair = new DevicePair(device, id);
-            // pair.setDevice(device);
-            // pair.setId(id);
+            id = this.fakeFileSys.Open(strings[1]);
+            pair = new DevicePair(this.fakeFileSys, id);
 
             if (search(pair)) {
                 return id;
@@ -39,13 +42,22 @@ public class VFS implements Device {
         return -1;
     }
 
+    /*
+     * Uses passed id to call close on specified device and set device's index position to null 
+     * in the device list
+     * @Param: int id
+     */
     @Override
     public void Close(int id) {
+    	this.devices[id].getDevice().Close(id);
         this.devices[id] = null;
     }
 
-    // Hopefully passing to proper device
-    // If not check instance of device and run code for respective device
+    /*
+     * Uses passed if to call respective read on the specified device.
+     * @Param: int id, int size
+     * @Return: byte[]
+     */
     @Override
     public byte[] Read(int id, int size) {
         Device dev = this.devices[id].getDevice();
@@ -54,8 +66,11 @@ public class VFS implements Device {
         return bArray;
     }
 
-    // Hopefully passing to proper device
-    // If not check instance of device and run code for respective device
+    /*
+     * Uses passed if to call respective write on the specified device.
+     * @Param: int id, byte[] dat
+     * @Return: length of data array
+     */
     @Override
     public int Write(int id, byte[] data) {
 
@@ -68,7 +83,10 @@ public class VFS implements Device {
         return 0;
     }
 
-    // Hopefully passing to proper device
+    /*
+     * Uses passed if to call respective seek on the specified device.
+     * @Param: int id, int to
+     */
     @Override
     public void Seek(int id, int to) {
         Device dev = this.devices[id].getDevice();
@@ -76,6 +94,12 @@ public class VFS implements Device {
         dev.Seek(devId, to);
     }
 
+    /*
+     * Searches for an empty index in Device pair list and inserts device pair.
+     * Returns true if pair was added successfully
+     * @Param: DevicePair pair
+     * @Return: boolean
+     */
     private boolean search(DevicePair pair) {
         for (int i = 0; i < devices.length; i++) {
             if (devices[i] == null) {

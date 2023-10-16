@@ -1,6 +1,6 @@
 package os_project;
 
-public class OS { // supposed to be static
+public class OS {
 
 	private static Kernel kernel;
 

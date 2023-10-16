@@ -11,6 +11,12 @@ public class FakeFileSystem implements Device {
 		this.fileArray = new RandomAccessFile[10];
 	}
 
+    /*
+     * Uses string input to create a new RandomAccessFile. Then places the file into the fileArray and returns
+     * it's index position
+     * @Param: String s
+     * @Return: int id, index position of file
+     */
 	@Override
 	public int Open(String s) {
 		int id;
@@ -35,9 +41,12 @@ public class FakeFileSystem implements Device {
 		return -1;
 	}
 
+    /*
+     * Uses passed id to close specified RandomAccessFile. Then sets it's index position to null
+     * @Param: int id
+     */
 	@Override
 	public void Close(int id) {
-		System.out.println("FFS Close");
 		try {
 			System.out.println("FFS Close: file array[" + id + "]");
 			fileArray[id].close();
@@ -47,6 +56,11 @@ public class FakeFileSystem implements Device {
 		}
 	}
 
+    /*
+     * Calls RandomAccessFile read() on specified file
+     * @Param: int id, int size
+     * @Return: byte[]
+     */
 	@Override
 	public byte[] Read(int id, int size) {
 		byte[] bArray = new byte[size];
@@ -61,7 +75,11 @@ public class FakeFileSystem implements Device {
 		return bArray;
 	}
 
-	// TODO:Check
+    /*
+     * Calls RandomAccessFile write() on specified file
+     * @Param: int id, byte[] data
+     * @Return: length of data array
+     */
 	@Override
 	public int Write(int id, byte[] data) {
 
@@ -80,6 +98,10 @@ public class FakeFileSystem implements Device {
 		return 0;
 	}
 
+    /*
+     * Calls RandomAccessFile seek() on specified file
+     * @Param: int id, int to
+     */
 	@Override
 	public void Seek(int id, int to) {
 		try {

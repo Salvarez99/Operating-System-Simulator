@@ -1,7 +1,5 @@
 package os_project;
 
-import java.nio.charset.StandardCharsets;
-
 public class HelloWorld extends UserlandProcess{
 
 	public HelloWorld() {
@@ -21,7 +19,8 @@ public class HelloWorld extends UserlandProcess{
 
 		int id = OS.Open("file data.txt");
 		OS.Write(id, bArray);
-		bArray = OS.Read(id, 10);
+		OS.Seek(id, 5);
+		bArray = OS.Read(id, 5);
 		String s = new String(bArray);
 		System.out.println("Read: " + s);
 		OS.Close(id);

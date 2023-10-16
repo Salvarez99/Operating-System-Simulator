@@ -19,6 +19,12 @@ public class Kernel implements Device {
 		scheduler.sleep(milliseconds);
 	}
 
+	/*
+	 * Checks if there is an available space for a device to be opened in the current process then calls vfs.open 
+	 * and stores the returned id into the current process' list of device ids
+	 * @Param: String s
+	 * @Return: index position of current device
+	 */
 	@Override
 	public int Open(String s) {
 		KernelandProcess currentProcess = scheduler.getCurrentlyRunning();
@@ -36,17 +42,25 @@ public class Kernel implements Device {
 		return -1;
 	}
 
+	/*
+	 * Uses the id to find the matching vfs id and close that device
+	 * @Param: int id, id of device being closed
+	 */
 	@Override
 	public void Close(int id) {
 		KernelandProcess currentProcess = scheduler.getCurrentlyRunning();
 		int[] cpDeviceIds = currentProcess.getDeviceIds();
 		int vfsId = cpDeviceIds[id];
 		cpDeviceIds[id] = -1;
-		// TODO: may not set actual cp array
 		currentProcess.setDeviceIds(cpDeviceIds);
 		vfs.Close(vfsId);
 	}
 
+	/*
+	 * Calls read on the specified device
+	 * @Param: int id, int size
+	 * @Return: byte[]
+	 */
 	@Override
 	public byte[] Read(int id, int size) {
 		KernelandProcess currentProcess = scheduler.getCurrentlyRunning();
@@ -56,6 +70,11 @@ public class Kernel implements Device {
 		return bArray;
 	}
 
+	/*
+	 * Calls write on the specified device
+	 * @Param: int id, byte[] data
+	 * @Return: length of data array
+	 */
 	@Override
 	public int Write(int id, byte[] data) {
 
@@ -69,7 +88,11 @@ public class Kernel implements Device {
 
 		return 0;
 	}
-
+	
+	/*
+	 * Calls seek on the specified device
+	 * @Param: int id, int to
+	 */
 	@Override
 	public void Seek(int id, int to) {
 		KernelandProcess currentProcess = scheduler.getCurrentlyRunning();
