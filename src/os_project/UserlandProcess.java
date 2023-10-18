@@ -1,5 +1,5 @@
 package os_project;
 
-public abstract class UserlandProcess implements Runnable{
+public abstract class UserlandProcess implements Runnable {
 
 }

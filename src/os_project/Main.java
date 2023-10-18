@@ -10,9 +10,6 @@ public class Main {
 		UserlandProcess interactiveProgram = new ItProg();
 		UserlandProcess backgroundProgram = new BgProg();
 		UserlandProcess sleepingProcess = new Sleep500();
-
-
-
 		
 		//PID 1
 		//Runs long time intentionally
@@ -23,7 +20,8 @@ public class Main {
 		OS.createProcess(sleepingProcess, Priority.INTERACTIVE);
 		//PID 4
 		OS.createProcess(backgroundProgram,Priority.BACKGROUND);
-		
+		//PID 5
+		OS.createProcess(interactiveProgram, Priority.INTERACTIVE);
 
 	}
 }

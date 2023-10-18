@@ -120,7 +120,7 @@ public class Scheduler {
 
 				System.out.println("Process(" + temp.getThreadPid() + "): Stopping");
 				temp.stop();
-				
+
 				appendToList(temp);
 
 			}
@@ -168,12 +168,15 @@ public class Scheduler {
 		System.out.printf("Putting Process: (%d) to sleep for %dms \n", currentProcess.getThreadPid(), milliseconds);
 		currentProcess.setTimeOuts(0);
 		this.sleepingProcessList.add(this.currentProcess);
-
 		var temp = currentProcess;
 		currentProcess = null;
 		temp.stop();
 
 		switchProcess();
+	}
+
+	public KernelandProcess getCurrentlyRunning() {
+		return this.currentProcess;
 	}
 
 	public long getTime() {
@@ -200,25 +203,25 @@ public class Scheduler {
 		}
 	}
 
-	private void demotion(){
-			if (currentProcess.getTimeOuts() < 5) {
+	private void demotion() {
+		if (currentProcess.getTimeOuts() < 5) {
 
-				if (currentProcess.getPriority() != Priority.BACKGROUND) {
-					currentProcess.incrementTimeOut();
-				}
-				System.out.println(
-						"Process: ID(" + currentProcess.getThreadPid() + ") Timeouts: " + currentProcess.getTimeOuts());
-
-			} else {
-
-				if (currentProcess.getPriority() != Priority.BACKGROUND) {
-
-					System.out.println("Process: ID(" + currentProcess.getThreadPid() + ") Timed Out: "
-							+ currentProcess.getTimeOuts());
-					demote(currentProcess);
-					currentProcess.setTimeOuts(0);
-				}
+			if (currentProcess.getPriority() != Priority.BACKGROUND) {
+				currentProcess.incrementTimeOut();
 			}
+			System.out.println(
+					"Process: ID(" + currentProcess.getThreadPid() + ") Timeouts: " + currentProcess.getTimeOuts());
+
+		} else {
+
+			if (currentProcess.getPriority() != Priority.BACKGROUND) {
+
+				System.out.println("Process: ID(" + currentProcess.getThreadPid() + ") Timed Out: "
+						+ currentProcess.getTimeOuts());
+				demote(currentProcess);
+				currentProcess.setTimeOuts(0);
+			}
+		}
 	}
 
 	private KernelandProcess selectProcess() {
