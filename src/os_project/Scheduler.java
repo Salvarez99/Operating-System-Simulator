@@ -8,6 +8,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Random;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class Scheduler {
 
@@ -28,6 +29,9 @@ public class Scheduler {
 	private List<KernelandProcess> interactiveProcessList = new LinkedList<KernelandProcess>();
 	private List<KernelandProcess> backgroundProcessList = new LinkedList<KernelandProcess>();
 	private List<KernelandProcess> sleepingProcessList = new LinkedList<KernelandProcess>();
+	private HashMap<Integer, KernelandProcess> processPids = new HashMap<>();
+	private HashMap<Integer, KernelandProcess> waitingForMessage = new HashMap<>();
+	private HashMap<String, KernelandProcess> processNames = new HashMap<>();
 	private KernelandProcess currentProcess;
 	private Interrupt interrupt;
 	private Timer timer;
@@ -56,6 +60,8 @@ public class Scheduler {
 	public int createProcess(UserlandProcess up) {
 
 		KernelandProcess newProcess = new KernelandProcess(up);
+		processPids.put(newProcess.getThreadPid(), newProcess);
+		processNames.put(newProcess.getProcessName(), newProcess);
 		appendToList(newProcess);
 
 		// no running processes
@@ -80,6 +86,8 @@ public class Scheduler {
 	public int createProcess(UserlandProcess up, Priority priority) {
 
 		KernelandProcess newProcess = new KernelandProcess(up, priority);
+		processPids.put(newProcess.getThreadPid(), newProcess);
+		processNames.put(newProcess.getProcessName(), newProcess);
 		appendToList(newProcess);
 
 		// no running processes
@@ -125,6 +133,8 @@ public class Scheduler {
 
 			}
 
+			processPids.remove(currentProcess.getThreadPid());
+			processNames.remove(currentProcess.getProcessName());
 			currentProcess = selectProcess();
 
 			System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") ("
@@ -354,5 +364,41 @@ public class Scheduler {
 			default:
 				break;
 		}
+	}
+
+	// public void appendToWaitingForMessage(KernelandProcess process){
+	// 	waitingForMessage.put(process.getThreadPid(), process);
+	// }
+
+	// public KernelandProcess getFromWaitingForMessage(int targetPid){
+	// 	return waitingForMessage.get(targetPid);
+	// }
+
+	public HashMap<Integer, KernelandProcess> getWaitingForMessageHash(){
+		return waitingForMessage;
+	}
+
+	/*
+	 * Returns the current process' pid
+	 * 
+	 * @Return int pid
+	 */
+	public int getPid() {
+		return currentProcess.getThreadPid();
+	}
+
+	/*
+	 * Find the pid for the specified process
+	 * 
+	 * @Param: String processName
+	 * 
+	 * @Return: int pid
+	 */
+	public int getPidByName(String processName) {
+		return processNames.get(processName).getThreadPid();
+	}
+
+	public KernelandProcess getProcessByPid(int pid){
+		return processPids.get(pid);
 	}
 }

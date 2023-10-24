@@ -1,5 +1,8 @@
 package os_project;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+
 public class Kernel implements Device {
 	private static Scheduler scheduler = new Scheduler();
 	private VFS vfs = new VFS();
@@ -20,9 +23,12 @@ public class Kernel implements Device {
 	}
 
 	/*
-	 * Checks if there is an available space for a device to be opened in the current process then calls vfs.open 
+	 * Checks if there is an available space for a device to be opened in the
+	 * current process then calls vfs.open
 	 * and stores the returned id into the current process' list of device ids
+	 * 
 	 * @Param: String s
+	 * 
 	 * @Return: index position of current device
 	 */
 	@Override
@@ -44,6 +50,7 @@ public class Kernel implements Device {
 
 	/*
 	 * Uses the id to find the matching vfs id and close that device
+	 * 
 	 * @Param: int id, id of device being closed
 	 */
 	@Override
@@ -58,7 +65,9 @@ public class Kernel implements Device {
 
 	/*
 	 * Calls read on the specified device
+	 * 
 	 * @Param: int id, int size
+	 * 
 	 * @Return: byte[]
 	 */
 	@Override
@@ -72,7 +81,9 @@ public class Kernel implements Device {
 
 	/*
 	 * Calls write on the specified device
+	 * 
 	 * @Param: int id, byte[] data
+	 * 
 	 * @Return: length of data array
 	 */
 	@Override
@@ -88,9 +99,10 @@ public class Kernel implements Device {
 
 		return 0;
 	}
-	
+
 	/*
 	 * Calls seek on the specified device
+	 * 
 	 * @Param: int id, int to
 	 */
 	@Override
@@ -100,5 +112,38 @@ public class Kernel implements Device {
 
 		int vfsId = cpDeviceIds[id];
 		this.vfs.Seek(vfsId, to);
+	}
+
+	public int getPid() {
+		return scheduler.getPid();
+	}
+
+	public int getPidByName(String processName) {
+		return scheduler.getPidByName(processName);
+	}
+
+	public void sendMessage(KernelMessage msg) {
+		HashMap<Integer, KernelandProcess> waitingForMessage = scheduler.getWaitingForMessageHash();
+		KernelMessage message = new KernelMessage(msg);
+		message.setSenderPid(scheduler.getCurrentlyRunning().getThreadPid());
+		KernelandProcess targetProcess = scheduler.getProcessByPid(message.getTargetPid());
+		targetProcess.appendToMessageQueue(message);
+
+		if(waitingForMessage.containsValue(targetProcess)){
+			//TODO: ask phipps if we can make a call to scheduler and have the method there
+		}
+
+	}
+
+	public KernelMessage waitForMessage() {
+
+		LinkedList<KernelMessage> messages = scheduler.getCurrentlyRunning().getMessageQueue();
+		
+		if(messages.size() != 0){
+			return messages.removeFirst();
+		}else{
+			//TODO: put currentprocess onto the waitingForMessageQueue
+		}
+		return null;
 	}
 }
