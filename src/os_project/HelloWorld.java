@@ -1,18 +1,18 @@
 package os_project;
 
-public class HelloWorld extends UserlandProcess{
+public class HelloWorld extends UserlandProcess {
 
 	public HelloWorld() {
 	}
-	
+
 	@Override
 	public void run() {
 		// try {
-		// 	while(true) {
-		// 		System.out.println("Hello World");
-		// 		Thread.sleep(50); // sleep for 50 ms
+		// while(true) {
+		// System.out.println("Hello World");
+		// Thread.sleep(50); // sleep for 50 ms
 
-		// 	}
+		// }
 		// } catch (Exception e) { }
 
 		byte[] bArray = "HelloWorld".getBytes();
@@ -24,10 +24,7 @@ public class HelloWorld extends UserlandProcess{
 		String s = new String(bArray);
 		System.out.println("Read: " + s);
 
-		OS.getPidByName("GoodbyeWorld");
-		OS.sendMessage(new KernelMessage(null));
-
-
+		System.out.println("Simple class name: " + getClass().getSimpleName());
 
 		OS.Close(id);
 	}

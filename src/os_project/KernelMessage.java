@@ -14,6 +14,12 @@ public class KernelMessage {
 
     }
 
+    public KernelMessage(int targetPid, byte[] data, int what) {
+        this.targetPid = targetPid;
+        this.data = data;
+        this.what = what;
+    }
+
     public int getSenderPid() {
         return senderPid;
     }
