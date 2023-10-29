@@ -123,27 +123,10 @@ public class Kernel implements Device {
 	}
 
 	public void sendMessage(KernelMessage msg) {
-		HashMap<Integer, KernelandProcess> waitingForMessage = scheduler.getWaitingForMessageHash();
-		KernelMessage message = new KernelMessage(msg);
-		message.setSenderPid(scheduler.getCurrentlyRunning().getThreadPid());
-		KernelandProcess targetProcess = scheduler.getProcessByPid(message.getTargetPid());
-		targetProcess.appendToMessageQueue(message);
-
-		if(waitingForMessage.containsValue(targetProcess)){
-			//TODO: ask phipps if we can make a call to scheduler and have the method there
-		}
-
+		scheduler.sendMessage(msg);
 	}
 
 	public KernelMessage waitForMessage() {
-
-		LinkedList<KernelMessage> messages = scheduler.getCurrentlyRunning().getMessageQueue();
-		
-		if(messages.size() != 0){
-			return messages.removeFirst();
-		}else{
-			//TODO: put currentprocess onto the waitingForMessageQueue
-		}
-		return null;
+		return scheduler.waitForMessage();
 	}
 }

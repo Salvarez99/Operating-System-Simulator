@@ -27,19 +27,19 @@ public class OS {
 		Kernel.sleep(milliseconds);
 	}
 
-	public int getPid() {
+	public static int getPid() {
 		return kernel.getPid();
 	}
 
-	public int getPidByName(String processName) {
+	public static int getPidByName(String processName) {
 		return kernel.getPidByName(processName);
 	}
 
-	public void sendMessage(KernelMessage msg) {
+	public static void sendMessage(KernelMessage msg) {
 		kernel.sendMessage(msg);
 	}
 
-	public KernelMessage waitForMessage() {
+	public static KernelMessage waitForMessage() {
 		return kernel.waitForMessage();
 	}
 

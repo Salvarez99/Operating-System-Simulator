@@ -366,25 +366,13 @@ public class Scheduler {
 		}
 	}
 
-	// public void appendToWaitingForMessage(KernelandProcess process){
-	// 	waitingForMessage.put(process.getThreadPid(), process);
-	// }
-
-	// public KernelandProcess getFromWaitingForMessage(int targetPid){
-	// 	return waitingForMessage.get(targetPid);
-	// }
-
-	public HashMap<Integer, KernelandProcess> getWaitingForMessageHash(){
-		return waitingForMessage;
-	}
-
 	/*
 	 * Returns the current process' pid
 	 * 
 	 * @Return int pid
 	 */
 	public int getPid() {
-		return currentProcess.getThreadPid();
+		return this.currentProcess.getThreadPid();
 	}
 
 	/*
@@ -395,10 +383,27 @@ public class Scheduler {
 	 * @Return: int pid
 	 */
 	public int getPidByName(String processName) {
-		return processNames.get(processName).getThreadPid();
+		return this.processNames.get(processName).getThreadPid();
 	}
 
-	public KernelandProcess getProcessByPid(int pid){
-		return processPids.get(pid);
+	public void sendMessage(KernelMessage msg) {
+		KernelMessage message = new KernelMessage(msg);
+		message.setSenderPid(getPid());
+		KernelandProcess targetProcess = this.processPids.get(message.getTargetPid());
+		targetProcess.appendToMessageQueue(message);
+
+		if (this.waitingForMessage.containsValue(targetProcess)) {
+			// restore to proper runnable queue
+			waitingForMessage.remove(targetProcess.getThreadPid());
+			appendToList(targetProcess);
+		}
+	}
+
+	public KernelMessage waitForMessage() {
+		
+		if (getCurrentlyRunning().getMessageQueue().isEmpty()) {
+			waitingForMessage.put(getPid(), getCurrentlyRunning());
+		}
+		return getCurrentlyRunning().getMessageQueue().removeFirst();
 	}
 }

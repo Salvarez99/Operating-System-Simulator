@@ -23,6 +23,12 @@ public class HelloWorld extends UserlandProcess{
 		bArray = OS.Read(id, 5);
 		String s = new String(bArray);
 		System.out.println("Read: " + s);
+
+		OS.getPidByName("GoodbyeWorld");
+		OS.sendMessage(new KernelMessage(null));
+
+
+
 		OS.Close(id);
 	}
 }
