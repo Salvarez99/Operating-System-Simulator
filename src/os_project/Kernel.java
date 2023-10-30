@@ -1,8 +1,5 @@
 package os_project;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-
 public class Kernel implements Device {
 	private static Scheduler scheduler = new Scheduler();
 	private VFS vfs = new VFS();

@@ -15,6 +15,7 @@ public class KernelMessage {
     }
 
     public KernelMessage(int targetPid, byte[] data, int what) {
+        this.senderPid = -1;
         this.targetPid = targetPid;
         this.data = data;
         this.what = what;

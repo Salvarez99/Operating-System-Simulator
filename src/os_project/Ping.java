@@ -6,19 +6,25 @@ public class Ping extends UserlandProcess {
     public void run() {
         String className = getClass().getSimpleName();
         byte[] data = "ping".getBytes();
+        OS.sleep(50);
         int targetProcessPid = OS.getPidByName("Pong");
-        KernelMessage message = new KernelMessage(targetProcessPid, data, 0);
+        int i = 0;
+        KernelMessage message = new KernelMessage(targetProcessPid, data, i);
 
-        System.out.println("I am" + className + ", Pong pid: " + targetProcessPid);
-        for (int i = 0; i < 3; i++) {
+        System.out.println("I am " + className + ", Pong pid: " + targetProcessPid);
 
-            System.out.printf("\n%s: from %d to %d: what: $d\n", 
-            className, OS.getPidByName(className), targetProcessPid, message.getWhat());
-            OS.sendMessage(message);
-            message = OS.waitForMessage();
-            message.setTargetPid(targetProcessPid);
-            message.setData(data);
-            message.setWhat(i);
+        while(true){
+            // for (int i = 0; i < 3; i++) {
+    
+                System.out.printf("\n%s: from %d to %d: what: $d\n", 
+                className, OS.getPidByName("Pong"), targetProcessPid, message.getWhat());
+                OS.sendMessage(message);
+                message = OS.waitForMessage();
+                message.setTargetPid(targetProcessPid);
+                message.setData(data);
+                message.setWhat(i++);
+            // }
+
         }
     }
 }
