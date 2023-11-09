@@ -20,9 +20,12 @@ public class Kernel implements Device {
 	}
 
 	/*
-	 * Checks if there is an available space for a device to be opened in the current process then calls vfs.open 
+	 * Checks if there is an available space for a device to be opened in the
+	 * current process then calls vfs.open
 	 * and stores the returned id into the current process' list of device ids
+	 * 
 	 * @Param: String s
+	 * 
 	 * @Return: index position of current device
 	 */
 	@Override
@@ -44,6 +47,7 @@ public class Kernel implements Device {
 
 	/*
 	 * Uses the id to find the matching vfs id and close that device
+	 * 
 	 * @Param: int id, id of device being closed
 	 */
 	@Override
@@ -58,7 +62,9 @@ public class Kernel implements Device {
 
 	/*
 	 * Calls read on the specified device
+	 * 
 	 * @Param: int id, int size
+	 * 
 	 * @Return: byte[]
 	 */
 	@Override
@@ -72,7 +78,9 @@ public class Kernel implements Device {
 
 	/*
 	 * Calls write on the specified device
+	 * 
 	 * @Param: int id, byte[] data
+	 * 
 	 * @Return: length of data array
 	 */
 	@Override
@@ -88,9 +96,10 @@ public class Kernel implements Device {
 
 		return 0;
 	}
-	
+
 	/*
 	 * Calls seek on the specified device
+	 * 
 	 * @Param: int id, int to
 	 */
 	@Override
@@ -100,5 +109,21 @@ public class Kernel implements Device {
 
 		int vfsId = cpDeviceIds[id];
 		this.vfs.Seek(vfsId, to);
+	}
+
+	public int getPid() {
+		return scheduler.getPid();
+	}
+
+	public int getPidByName(String processName) {
+		return scheduler.getPidByName(processName);
+	}
+
+	public void sendMessage(KernelMessage msg) {
+		scheduler.sendMessage(msg);
+	}
+
+	public KernelMessage waitForMessage() {
+		return scheduler.waitForMessage();
 	}
 }

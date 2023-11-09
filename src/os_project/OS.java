@@ -27,6 +27,22 @@ public class OS {
 		Kernel.sleep(milliseconds);
 	}
 
+	public static int getPid() {
+		return kernel.getPid();
+	}
+
+	public static int getPidByName(String processName) {
+		return kernel.getPidByName(processName);
+	}
+
+	public static void sendMessage(KernelMessage msg) {
+		kernel.sendMessage(msg);
+	}
+
+	public static KernelMessage waitForMessage() {
+		return kernel.waitForMessage();
+	}
+
 	public static int Open(String s) {
 		return kernel.Open(s);
 	}

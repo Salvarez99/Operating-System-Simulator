@@ -8,6 +8,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Random;
 import java.util.Collections;
+import java.util.HashMap;
 
 public class Scheduler {
 
@@ -28,6 +29,9 @@ public class Scheduler {
 	private List<KernelandProcess> interactiveProcessList = new LinkedList<KernelandProcess>();
 	private List<KernelandProcess> backgroundProcessList = new LinkedList<KernelandProcess>();
 	private List<KernelandProcess> sleepingProcessList = new LinkedList<KernelandProcess>();
+	private HashMap<Integer, KernelandProcess> processPids = new HashMap<>();
+	private HashMap<Integer, KernelandProcess> waitingForMessage = new HashMap<>();
+	private HashMap<String, KernelandProcess> processNames = new HashMap<>();
 	private KernelandProcess currentProcess;
 	private Interrupt interrupt;
 	private Timer timer;
@@ -56,6 +60,8 @@ public class Scheduler {
 	public int createProcess(UserlandProcess up) {
 
 		KernelandProcess newProcess = new KernelandProcess(up);
+		processPids.put(newProcess.getThreadPid(), newProcess);
+		processNames.put(newProcess.getProcessName(), newProcess);
 		appendToList(newProcess);
 
 		// no running processes
@@ -80,6 +86,8 @@ public class Scheduler {
 	public int createProcess(UserlandProcess up, Priority priority) {
 
 		KernelandProcess newProcess = new KernelandProcess(up, priority);
+		processPids.put(newProcess.getThreadPid(), newProcess);
+		processNames.put(newProcess.getProcessName(), newProcess);
 		appendToList(newProcess);
 
 		// no running processes
@@ -106,6 +114,8 @@ public class Scheduler {
 
 		wakeUp();
 
+		// while(waitingForMessage.)
+
 		if (currentProcess != null) {
 
 			demotion();
@@ -125,6 +135,8 @@ public class Scheduler {
 
 			}
 
+			processPids.remove(currentProcess.getThreadPid());
+			processNames.remove(currentProcess.getProcessName());
 			currentProcess = selectProcess();
 
 			System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") ("
@@ -300,6 +312,12 @@ public class Scheduler {
 			System.out.println("Null Process Returned\n");
 
 			return null;
+		} else if (!waitingForMessage.isEmpty()) {
+
+			System.out.println("WaitingForMessage hash is not empty: " + waitingForMessage.size());
+			System.out.println("Null Process Returned\n");
+			return null;
+
 		} else {
 			System.exit(0);
 		}
@@ -354,5 +372,114 @@ public class Scheduler {
 			default:
 				break;
 		}
+	}
+
+	/*
+	 * Returns the current process' pid
+	 * 
+	 * @Return int pid
+	 */
+	public int getPid() {
+		return this.currentProcess.getThreadPid();
+	}
+
+	/*
+	 * Find the pid for the specified process
+	 * 
+	 * @Param: String processName
+	 * 
+	 * @Return: int pid
+	 */
+	public int getPidByName(String processName) {
+		return this.processNames.get(processName).getThreadPid();
+	}
+
+	public void sendMessage(KernelMessage msg) {
+		KernelMessage message = new KernelMessage(msg);
+		message.setSenderPid(getPid());
+		KernelandProcess targetProcess = this.processPids.get(message.getTargetPid());
+
+		// target found
+		if (targetProcess != null) {
+			targetProcess.appendToMessageQueue(message);
+		}
+
+		// check to see if target is waiting for a message
+		if (this.waitingForMessage.containsValue(targetProcess)) {
+			// restore to proper runnable queue
+			waitingForMessage.remove(targetProcess.getThreadPid());
+			appendToList(targetProcess);
+		}
+	}
+
+	/*
+	 * Dequeues the given process from it's respective queue
+	 * 
+	 * @Param1: KernelandProcess
+	 */
+	public void removeFromRunnable(KernelandProcess process) {
+		switch (process.getPriority()) {
+			case REALTIME:
+				realTimeProcessList.remove(process);
+				System.out.printf("Removing Process: ID(%d) from RealTime Processes\n",
+						process.getThreadPid());
+				break;
+			case INTERACTIVE:
+				interactiveProcessList.remove(process);
+				System.out.printf("Removing Process: ID(%d) from Interactive Processes\n",
+						process.getThreadPid());
+				break;
+			case BACKGROUND:
+				backgroundProcessList.remove(process);
+				System.out.printf("Removing Process: ID(%d) from Background Processes\n",
+						process.getThreadPid());
+				break;
+			default:
+				break;
+		}
+	}
+
+	/*
+	 * Checks if process is waiting for a message. If it has received a message it
+	 * returns the message.
+	 * If the message is not received then
+	 */
+	public KernelMessage waitForMessage() {
+
+		LinkedList<KernelMessage> currentMessageQueue = getCurrentlyRunning().getMessageQueue();
+
+		if (currentMessageQueue.isEmpty()) {
+			removeFromRunnable(getCurrentlyRunning());
+			waitingForMessage.put(getCurrentlyRunning().getThreadPid(), getCurrentlyRunning());
+
+			var temp = currentProcess;
+			currentProcess = null;
+			temp.stop();
+
+			switchProcess();
+		}
+
+	//old
+		// Check if process has a message
+		// if (!currentMessageQueue.isEmpty()) {
+		// 	// remove from waiting
+		// 	waitingForMessage.remove(getCurrentlyRunning().getThreadPid());
+		// 	return currentMessageQueue.removeFirst();
+		// }
+
+		// removeFromRunnable(getCurrentlyRunning());
+		// waitingForMessage.put(getCurrentlyRunning().getThreadPid(),
+		// getCurrentlyRunning());
+
+		// var temp = currentProcess;
+		// currentProcess = null;
+		// temp.stop();
+
+		// switchProcess();
+
+		waitingForMessage.remove(getCurrentlyRunning().getThreadPid());
+		return currentMessageQueue.removeFirst();
+
+		// return null;
 	}
 }

@@ -1,5 +1,7 @@
 package os_project;
 
+import java.util.LinkedList;
+
 public class KernelandProcess {
 
 	private static int nextpid = 2;
@@ -10,7 +12,9 @@ public class KernelandProcess {
 	private long wakeTime;
 	private int timeOuts;
 	private boolean running;
-	private int[] deviceIds = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1};
+	private int[] deviceIds = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+	private String processName;
+	private LinkedList<KernelMessage> messageQueue;
 
 	public KernelandProcess(UserlandProcess up) {
 		this.pid = KernelandProcess.nextpid - 1;
@@ -20,7 +24,8 @@ public class KernelandProcess {
 		this.thread = new Thread(up);
 		this.priority = Priority.INTERACTIVE;
 		this.timeOuts = 0;
-		// this.deviceIds = new int[10];
+		this.processName = up.getClass().getSimpleName();
+		this.messageQueue = new LinkedList<>();
 	}
 
 	public KernelandProcess(UserlandProcess up, Priority priority) {
@@ -31,7 +36,8 @@ public class KernelandProcess {
 		this.thread = new Thread(up);
 		this.priority = priority;
 		this.timeOuts = 0;
-		// this.deviceIds = new int[10];
+		this.processName = up.getClass().getSimpleName();
+		this.messageQueue = new LinkedList<>();
 
 	}
 
@@ -125,6 +131,10 @@ public class KernelandProcess {
 		return pid;
 	}
 
+	public String getProcessName() {
+		return processName;
+	}
+
 	/*
 	 * Retrieves hasStarted
 	 * 
@@ -168,5 +178,13 @@ public class KernelandProcess {
 
 	public Thread getThread() {
 		return this.thread;
+	}
+
+	public void appendToMessageQueue(KernelMessage message) {
+		this.messageQueue.add(message);
+	}
+
+	public LinkedList<KernelMessage> getMessageQueue(){
+		return this.messageQueue;
 	}
 }
