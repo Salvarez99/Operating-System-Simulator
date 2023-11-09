@@ -1,3 +1,6 @@
 /bin/
 VSCode OS Workspace.code-workspace
 .gitignore
+/.metadata/
+.settings/org.eclipse.jdt.core.prefs
+.gitignore
