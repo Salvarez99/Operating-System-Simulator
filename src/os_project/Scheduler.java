@@ -137,6 +137,7 @@ public class Scheduler {
 
 			processPids.remove(currentProcess.getThreadPid());
 			processNames.remove(currentProcess.getProcessName());
+			
 			currentProcess = selectProcess();
 
 			System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") ("

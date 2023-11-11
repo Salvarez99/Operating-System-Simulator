@@ -1,10 +1,17 @@
 package os_project;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Random;
+
 public class Kernel implements Device {
 	private static Scheduler scheduler = new Scheduler();
 	private VFS vfs = new VFS();
+	//represents free spaces of physical memory
+	private boolean[] freeSpace = new boolean[1000];
 
 	public Kernel() {
+		Arrays.fill(freeSpace, true);
 	}
 
 	public int createProcess(UserlandProcess up) {
@@ -126,4 +133,144 @@ public class Kernel implements Device {
 	public KernelMessage waitForMessage() {
 		return scheduler.waitForMessage();
 	}
+
+    public int allocateMemory(int size) {
+		/*
+		 * TODO:
+		 * call OS -> kernel
+		 * 
+		 * kernel:
+		 * 		make sure divisible by 1024
+		 * 		calc num of pages we are trying allocate
+		 * 			amount of pages needed = size / 1024
+		 * 		check if amount of free spaces are equal to the amount of pages needed
+		 * 			if yes:
+		 * 				check memoryMap for contiguous empty pages and is equal to pages needed
+		 * 					if yes:
+		 * 						take index of empty space in freeSpace and place that as the value in memoryMap
+		 * 
+		 * return start virtual address, where we are starting in memoryMap
+		 */
+		//REVIEW
+		ArrayList<Integer> availableSpaceIndices = new ArrayList<>();
+		ArrayList<Integer> contiguousIndicesMemMap = new ArrayList<>();
+		int[] memMap = Kernel.scheduler.getCurrentlyRunning().getMemoryMap();
+		int pages_needed = size / 1024;
+		int free = 0;
+		
+
+		//true: space is free
+		//false: space is occupied
+		for (int i = 0; i < this.freeSpace.length; i++) {
+			if(freeSpace[i] == true){
+				free++;
+				availableSpaceIndices.add(i);
+			}
+		}
+
+		if(free >= pages_needed){
+			int contiguousSpace = 0;
+			Integer startVirtualAddress = 0;
+			
+			for (int i = 0; i < memMap.length; i++) {
+
+				if(contiguousSpace < pages_needed){
+					
+					if(memMap[i] != -1){
+						contiguousSpace++;
+						contiguousIndicesMemMap.add(i);
+					}else{
+						contiguousSpace--;
+						if(!contiguousIndicesMemMap.isEmpty())
+							contiguousIndicesMemMap.remove(0);
+					}
+				}else
+					break;
+			}
+
+			startVirtualAddress = contiguousIndicesMemMap.get(0);
+			for (int i = 0; i < pages_needed; i++) {
+				int value = availableSpaceIndices.remove(0);
+				freeSpace[value] = false;
+				memMap[contiguousIndicesMemMap.remove(0)] = value;
+			}
+
+			return startVirtualAddress;
+		}
+        return -1;
+    }
+
+	public boolean freeMemory(int pointer, int size) {
+		/*
+		 * TODO:
+		 * takes virtual address and the amount to free
+		 * return successful or not
+		 * 
+		 * Kernel:
+		 * 		calc num of pages we are trying allocate
+		 * 			amount of pages needed = size / 1024
+		 * 		free up memory map from indices (pointer / 1024) to (amount of pages needed) and free the associated freeSpace index
+		 * 		return true
+		 * return false
+		 */
+		KernelandProcess currentProcess = Kernel.scheduler.getCurrentlyRunning();
+		int[] memMap = currentProcess.getMemoryMap();
+		int start = pointer / 1024;
+		int offset = size / 1024;
+		int end = start + offset;
+		ArrayList<Integer> memMapIndices = new ArrayList<>();
+		ArrayList<Integer> freeSpaceIndices = new ArrayList<>();
+
+
+
+		//True: space is free
+		//False: space is occupied
+		for (int i = start; i < end; i++) {
+			int spaceIndex = memMap[i];
+			freeSpaceIndices.add(spaceIndex);
+			memMapIndices.add(i);
+
+			memMap[i] = -1;
+			freeSpace[spaceIndex] = true;
+		}
+
+		int check = 0;
+		for (int i = 0; i < memMapIndices.size(); i++) {
+			if(memMap[memMapIndices.get(i)] == -1 && freeSpace[freeSpaceIndices.get(i)] == true){
+				check++;
+			}
+		}
+		if(check == offset){
+			return true;
+		}
+
+
+		return false;
+	}
+
+	//REVIEW code review (getMapping)
+    public void getMapping(int virtualPageNumber) {
+		/*
+		 * TODO:
+		 * Update randomly one of the 2 TLB entries
+		 * 
+		 * random number val = index of TLB
+		 * 
+		 * get memoryMap
+		 * index = virtualPageNum
+		 * value at index = phys page num
+		 * 
+		 * update virt page num on TLB to = given VPN
+		 * update phys page on TLB to  = value at index
+		 * 
+		 */
+		KernelandProcess currentProcess = Kernel.scheduler.getCurrentlyRunning();
+		int[] memMap = currentProcess.getMemoryMap();
+		int[][] TLB = UserlandProcess.getTLB();
+		Random rand = new Random();
+		int TLB_index = rand.nextInt(2);
+
+		TLB[TLB_index][0] = virtualPageNumber;
+		TLB[TLB_index][1] = memMap[virtualPageNumber];
+    }
 }
