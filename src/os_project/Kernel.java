@@ -136,7 +136,6 @@ public class Kernel implements Device {
 
     public int allocateMemory(int size) {
 		/*
-		 * TODO:
 		 * call OS -> kernel
 		 * 
 		 * kernel:
@@ -151,7 +150,7 @@ public class Kernel implements Device {
 		 * 
 		 * return start virtual address, where we are starting in memoryMap
 		 */
-		//REVIEW
+		//REVIEW Allocate memory
 		ArrayList<Integer> availableSpaceIndices = new ArrayList<>();
 		ArrayList<Integer> contiguousIndicesMemMap = new ArrayList<>();
 		int[] memMap = Kernel.scheduler.getCurrentlyRunning().getMemoryMap();
@@ -202,7 +201,6 @@ public class Kernel implements Device {
 
 	public boolean freeMemory(int pointer, int size) {
 		/*
-		 * TODO:
 		 * takes virtual address and the amount to free
 		 * return successful or not
 		 * 
@@ -251,7 +249,6 @@ public class Kernel implements Device {
 	//REVIEW code review (getMapping)
     public void getMapping(int virtualPageNumber) {
 		/*
-		 * TODO:
 		 * Update randomly one of the 2 TLB entries
 		 * 
 		 * random number val = index of TLB

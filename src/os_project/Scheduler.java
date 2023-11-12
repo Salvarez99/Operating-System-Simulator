@@ -138,6 +138,8 @@ public class Scheduler {
 			processPids.remove(currentProcess.getThreadPid());
 			processNames.remove(currentProcess.getProcessName());
 			
+
+			
 			currentProcess = selectProcess();
 
 			System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") ("
@@ -252,6 +254,15 @@ public class Scheduler {
 		 * use first background process
 		 */
 		Random rand = new Random();
+
+		//REVIEW Clearing TLB on task switch
+		int[][] TLB = new int[2][2];
+		for (int i = 0; i < TLB.length; i++) {
+			for (int j = 0; j < TLB.length; j++) {
+				TLB[i][j] = -1;
+			}
+		}
+		UserlandProcess.setTLB(TLB);
 
 		if (!this.realTimeProcessList.isEmpty()) {
 			// generate random number between 0 and 9
