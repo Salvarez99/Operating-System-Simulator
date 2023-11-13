@@ -35,6 +35,27 @@ public class OS {
 		return kernel.getPidByName(processName);
 	}
 
+	public static int allocateMemory(int size) {
+
+		if(size % 1024 == 0)
+			return kernel.allocateMemory(size);
+		
+		return -1;
+	}
+
+	public static boolean freeMemory(int pointer, int size) {
+
+		if(pointer % 1024 == 0 && size % 1024 == 0)
+			return kernel.freeMemory(pointer, size);
+		
+		return false;
+	}
+
+	public static void getMapping(int virtualPageNumber) {
+		kernel.getMapping(virtualPageNumber);
+		
+	}
+
 	public static void sendMessage(KernelMessage msg) {
 		kernel.sendMessage(msg);
 	}
