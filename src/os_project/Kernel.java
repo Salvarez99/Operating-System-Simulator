@@ -159,16 +159,18 @@ public class Kernel implements Device {
 		int pages_needed = size / 1024;
 		int free = 0;
 
-		System.out.println("Pages Needed: " + pages_needed);
+		// System.out.println("Pages Needed: " + pages_needed);
 
 		// true: space is free
 		// false: space is occupied
 		for (int i = 0; i < this.freeSpace.length; i++) {
-			if (freeSpace[i] == true) {
+			if (freeSpace[i] == true && free <= pages_needed) {
 				free++;
 				availableSpaceIndices.add(i);
 			}
 		}
+
+		// System.out.println("FreeSpaces Available:" + availableSpaceIndices);
 
 		if (free >= pages_needed) {
 			int contiguousSpace = 0;
@@ -189,21 +191,23 @@ public class Kernel implements Device {
 				} else
 					break;
 			}
-			System.out.println("Contiguous Space: " + contiguousSpace);
-			System.out.println("contiguousIndicesMemMap Size: " + contiguousIndicesMemMap.size());
-			System.out.println("contiguousIndicesMemMap : " + contiguousIndicesMemMap);
+			// System.out.println("Contiguous Space: " + contiguousSpace);
+			// System.out.println("contiguousIndicesMemMap Size: " +
+			// contiguousIndicesMemMap.size());
+			// System.out.println("contiguousIndicesMemMap : " + contiguousIndicesMemMap);
 
 			startVirtualAddress = contiguousIndicesMemMap.get(0);
 			for (int i = 0; i < pages_needed; i++) {
 				int value = availableSpaceIndices.remove(0);
-				System.out.println("Value: " + value);
-				System.out.println("\nFreeSpace[" + value + "] = " + freeSpace[value]);
+				// System.out.println("Value: " + value);
+				// System.out.println("\nFreeSpace[" + value + "] = " + freeSpace[value]);
 				freeSpace[value] = false;
-				System.out.println("\nFreeSpace[" + value + "] = " + freeSpace[value]);
+				// System.out.println("\nFreeSpace[" + value + "] = " + freeSpace[value]);
 				memMap[contiguousIndicesMemMap.remove(0)] = value;
 			}
+			;
 
-			// System.out.println("Indices where space is available in freeSpace: " + availableSpaceIndices);
+			System.out.println("Start Address: " + startVirtualAddress);
 			return startVirtualAddress;
 		}
 		return -1;
@@ -223,51 +227,31 @@ public class Kernel implements Device {
 		 * return false
 		 */
 		System.out.println("========================Freeing Memory========================");
-		KernelandProcess currentProcess = Kernel.scheduler.getCurrentlyRunning();
-		int[] memMap = currentProcess.getMemoryMap();
+
+		int[] memMap = Kernel.scheduler.getCurrentlyRunning().getMemoryMap();
 		int start = pointer / 1024;
 		int offset = size / 1024;
 		int end = start + offset;
-		ArrayList<Integer> memMapIndices = new ArrayList<>();
-		ArrayList<Integer> freeSpaceIndices = new ArrayList<>();
+		int occupied = 0;
 
-		System.out.printf("Start: %d\nOffset: %d\nEnd: %d\n", start, offset, end);
-
-		// True: space is free
-		// False: space is occupied
-		for (int i = start; i < end; i++) {
-			// System.out.println("memMap[" + i + "]: " + memMap[i]);
-			int spaceIndex = memMap[i];
-			// System.out.println("SpaceIndex: " + spaceIndex);
-
-			if (spaceIndex > -1) {
-				freeSpaceIndices.add(spaceIndex);
-				memMapIndices.add(i);
-			}
-
-			memMap[i] = -1;
-
-			if (spaceIndex > -1) {
-				freeSpace[spaceIndex] = true;
+		for (int i = 0; i < memMap.length; i++) {
+			if (memMap[i] > -1) {
+				occupied++;
 			}
 		}
 
-		int check = 0;
-		System.out.println("MMIndices: " + memMapIndices);
-		System.out.println("freeSpaceIndices: " + freeSpaceIndices);
-		for (int i = 0; i < memMapIndices.size(); i++) {
-			if (memMap[memMapIndices.get(i)] == -1 && freeSpace[freeSpaceIndices.get(i)] == true) {
-				check++;
+		for (int i = 0; i < end; i++) {
+			if (memMap[i] > -1) {
+				int freeSpaceIndex = memMap[i];
+				freeSpace[freeSpaceIndex] = true;
+				memMap[i] = -1;
+				occupied--;
 			}
 		}
 
-		System.out.println("check: " + check);
-		System.out.println("offset: " + offset);
-		if (check == offset) {
-			
-
+		System.out.println("Occupied: " + occupied);
+		if (occupied == 0)
 			return true;
-		}
 
 		return false;
 	}

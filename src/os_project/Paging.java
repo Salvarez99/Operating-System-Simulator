@@ -5,7 +5,7 @@ public class Paging extends UserlandProcess{
     @Override
     public void run() {
         int pointer = OS.allocateMemory(4096);
-        System.out.println("Pointer: " + pointer);
+        // System.out.println("Pointer: " + pointer);
         byte data = 5;
 
         read(0);
