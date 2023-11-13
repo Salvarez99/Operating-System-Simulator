@@ -12,6 +12,17 @@ public class RtProg extends UserlandProcess{
 
 		int id = OS.Open("random 100");
 		byte[] bArray = OS.Read(id, 5);
+		int pointer = OS.allocateMemory(10240);
+		byte data = 42;
+
+		while (data > 0){
+			write(pointer, data);
+			data--;
+			read(pointer);
+			pointer += 50;
+		}
+
+
 		
 		for (int i = 0; i < bArray.length; i++) {
 			System.out.print(bArray[i]);

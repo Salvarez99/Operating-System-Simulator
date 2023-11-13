@@ -266,6 +266,7 @@ public class Scheduler {
 			}
 		}
 		UserlandProcess.setTLB(TLB);
+		UserlandProcess.printTLB();
 
 		if (!this.realTimeProcessList.isEmpty()) {
 			// generate random number between 0 and 9

@@ -19,11 +19,11 @@ public class Main {
 		OS.startUp(pageProcess);
 
 		// PID 2
-		// OS.createProcess(realProgram, Priority.REALTIME);
+		OS.createProcess(realProgram, Priority.REALTIME);
 		// PID 3
 		// OS.createProcess(sleepingProcess, Priority.INTERACTIVE);
 		// PID 4
-		// OS.createProcess(backgroundProgram, Priority.BACKGROUND);
+		OS.createProcess(backgroundProgram, Priority.BACKGROUND);
 
 		// OS.createProcess(pageProcess, Priority.INTERACTIVE);
 		// PID 5

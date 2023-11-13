@@ -4,19 +4,19 @@ public abstract class UserlandProcess implements Runnable {
 
     private static int[][] TLB = new int[2][2];
 
-    private static byte[] physicalMemory = new byte[(1024*1024)];
+    private static byte[] physicalMemory = new byte[(1024 * 1024)];
 
-    byte read(int virtualAddress){
+    byte read(int virtualAddress) {
         /*
          * //REVIEW Userland read()
          * Find page number
          * pageNum = address / page size
          * Search TLB to see if virtual -> physical mapping exist
          * If so:
-         *      physical address = physical page # * page size + page offset
-         *      return byte from mem array
+         * physical address = physical page # * page size + page offset
+         * return byte from mem array
          * else:
-         *      call getMapping()
+         * call getMapping()
          */
 
         int pageSize = 1024;
@@ -24,17 +24,18 @@ public abstract class UserlandProcess implements Runnable {
         int pageOffset = virtualAddress % pageSize;
         boolean found = false;
 
-        while(!found){
+        while (!found) {
             for (int row = 0; row < TLB.length; row++) {
-                if(TLB[row][0] == virtualPageNumber){
+                if (TLB[row][0] == virtualPageNumber) {
                     int physicalPageNumber = TLB[row][0];
                     int physicalAddress = physicalPageNumber * pageSize + pageOffset;
                     found = true;
+                    System.out.println("read: physicalMemory[" + physicalAddress + "]: " + physicalMemory[physicalAddress]);
                     return physicalMemory[physicalAddress];
                 }
             }
-            
-            if(found){
+
+            if (found) {
                 break;
             }
             OS.getMapping(virtualPageNumber);
@@ -42,35 +43,36 @@ public abstract class UserlandProcess implements Runnable {
         return -1;
     }
 
-    void write(int virtualAddress, byte value){
+    void write(int virtualAddress, byte value) {
         /*
-		 * //REVIEW Userland write()
+         * //REVIEW Userland write()
          * Find page number
          * pageNum = address / page size
          * Search TLB to see if virtual -> physical mapping exist
          * If so:
-         *      physical address = physical page # * page size + page offset
-         *      write in physical address
+         * physical address = physical page # * page size + page offset
+         * write in physical address
          * else:
-         *      call getMapping()
+         * call getMapping()
          */
-        
+
         int pageSize = 1024;
         int virtualPageNumber = virtualAddress / pageSize;
         int pageOffset = virtualAddress % pageSize;
         boolean found = false;
 
-        while(!found){
+        while (!found) {
             for (int row = 0; row < TLB.length; row++) {
-                if(TLB[row][0] == virtualPageNumber){
+                if (TLB[row][0] == virtualPageNumber) {
                     int physicalPageNumber = TLB[row][0];
                     int physicalAddress = physicalPageNumber * pageSize + pageOffset;
                     found = true;
                     physicalMemory[physicalAddress] = value;
+                    System.out.println("write: physicalMemory[" + physicalAddress + "]: " + physicalMemory[physicalAddress]);
                 }
             }
-            
-            if(found){
+
+            if (found) {
                 break;
             }
             OS.getMapping(virtualPageNumber);
@@ -81,8 +83,16 @@ public abstract class UserlandProcess implements Runnable {
         return TLB;
     }
 
-    public static void setTLB(int[][] tLB) {
-        TLB = tLB;
+    public static void setTLB(int[][] TLB) {
+        UserlandProcess.TLB = TLB;
     }
-    
+
+    public static void printTLB(){
+        for (int i = 0; i < TLB.length; i++) {
+			for (int j = 0; j < TLB.length; j++) {
+				System.out.println("TLB[" + i + "]["+ j + "]: " + TLB[i][j]);
+			}
+		}
+    }
+
 }

@@ -4,11 +4,15 @@ public class BgProg extends UserlandProcess{
 
 	@Override
 	public void run() {
-		//        for(int i = 0; i < 10; i++){
-		//            System.out.println("I'm in the background Ooooooo");
-		//        }
 
 		int ids[] = new int[10];
+
+		int pointer = OS.allocateMemory(1024);
+		System.out.println("pointer: " + pointer);
+		byte data = 98;
+		write(pointer, data);
+		read(pointer);
+
 		for(int i = 0; i < 10; i++){
 			int id = OS.Open("random " + (i+1000));
 			byte[] bArray = OS.Read(id, 5);
