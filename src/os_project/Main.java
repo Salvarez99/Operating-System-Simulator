@@ -12,23 +12,26 @@ public class Main {
 		UserlandProcess sleepingProcess = new Sleep500();
 		UserlandProcess pingProcess = new Ping();
 		UserlandProcess pongProcess = new Pong();
+		UserlandProcess pageProcess = new Paging();
 
 		// PID 1
 		// OS.startUp(helloworld);
-		OS.startUp(helloworld);
+		OS.startUp(pageProcess);
 
 		// PID 2
-		OS.createProcess(realProgram, Priority.REALTIME);
+		// OS.createProcess(realProgram, Priority.REALTIME);
 		// PID 3
-		OS.createProcess(sleepingProcess, Priority.INTERACTIVE);
+		// OS.createProcess(sleepingProcess, Priority.INTERACTIVE);
 		// PID 4
-		OS.createProcess(backgroundProgram, Priority.BACKGROUND);
+		// OS.createProcess(backgroundProgram, Priority.BACKGROUND);
+
+		// OS.createProcess(pageProcess, Priority.INTERACTIVE);
 		// PID 5
-		OS.createProcess(interactiveProgram, Priority.INTERACTIVE);
+		// OS.createProcess(interactiveProgram, Priority.INTERACTIVE);
 		// PID 6
-		OS.createProcess(pingProcess, Priority.INTERACTIVE);
+		// OS.createProcess(pingProcess, Priority.INTERACTIVE);
 		// PID 7
-		OS.createProcess(pongProcess, Priority.INTERACTIVE);
+		// OS.createProcess(pongProcess, Priority.INTERACTIVE);
 
 	}
 }

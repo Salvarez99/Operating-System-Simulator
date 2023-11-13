@@ -135,11 +135,14 @@ public class Scheduler {
 
 			}
 
+			//Process is Done
 			processPids.remove(currentProcess.getThreadPid());
 			processNames.remove(currentProcess.getProcessName());
+			// int virtualAddress = UserlandProcess.getTLB()[0][1];
+			OS.freeMemory(0,102400);
+			
 			
 
-			
 			currentProcess = selectProcess();
 
 			System.out.println("Running Process: ID(" + currentProcess.getThreadPid() + ") ("
