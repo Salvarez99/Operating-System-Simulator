@@ -8,7 +8,6 @@ public abstract class UserlandProcess implements Runnable {
 
     byte read(int virtualAddress) {
         /*
-         * //REVIEW Userland read()
          * Find page number
          * pageNum = address / page size
          * Search TLB to see if virtual -> physical mapping exist
@@ -45,7 +44,6 @@ public abstract class UserlandProcess implements Runnable {
 
     void write(int virtualAddress, byte value) {
         /*
-         * //REVIEW Userland write()
          * Find page number
          * pageNum = address / page size
          * Search TLB to see if virtual -> physical mapping exist

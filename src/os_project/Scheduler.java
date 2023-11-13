@@ -258,7 +258,6 @@ public class Scheduler {
 		 */
 		Random rand = new Random();
 
-		//REVIEW Clearing TLB on task switch
 		int[][] TLB = new int[2][2];
 		for (int i = 0; i < TLB.length; i++) {
 			for (int j = 0; j < TLB.length; j++) {

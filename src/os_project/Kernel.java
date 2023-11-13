@@ -151,7 +151,6 @@ public class Kernel implements Device {
 		 * 
 		 * return start virtual address, where we are starting in memoryMap
 		 */
-		// REVIEW Allocate memory
 		System.out.println("========================Allocating Memory=====================");
 		ArrayList<Integer> availableSpaceIndices = new ArrayList<>();
 		ArrayList<Integer> contiguousIndicesMemMap = new ArrayList<>();
@@ -256,7 +255,6 @@ public class Kernel implements Device {
 		return false;
 	}
 
-	// REVIEW code review (getMapping)
 	public void getMapping(int virtualPageNumber) {
 		/*
 		 * Update randomly one of the 2 TLB entries
