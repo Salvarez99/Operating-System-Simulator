@@ -312,6 +312,7 @@ public class Kernel implements Device {
 		Random rand = new Random();
 		int TLB_index = rand.nextInt(2);
 		int[][] TLB = UserlandProcess.getTLB();
+		byte[] data = new byte[1024];
 		int counter = 0;
 
 		TLB[TLB_index][0] = virtualPageNumber;
@@ -320,6 +321,7 @@ public class Kernel implements Device {
 		//I believe I need a loop to keep page swapping
 		if(physical_page_number == -1){
 
+			//Looking for a free page then assigning it to TLB
 			for (int i = 0; i < freeSpace.length; i++) {
 
 				if(freeSpace[i] == false){
@@ -338,6 +340,7 @@ public class Kernel implements Device {
 				* Pageswap
 				*/
 				Kernel.scheduler.pageSwap();
+
 			}else{
 			//An entry was free to use
 				if(vtmp.getOn_disk_page_number() != -1){
@@ -350,7 +353,7 @@ public class Kernel implements Device {
 					int start = vtmp.getOn_disk_page_number() * 1024;
 					int index = 0;
 					OS.Seek(OS.getId(), start);
-					byte[] data = OS.Read(OS.getId(), 1024);
+					data = OS.Read(OS.getId(), 1024);
 					scheduler.getCurrentlyRunning().getMemoryMap()[virtualPageNumber].physical_page_number = vtmp.physical_page_number;
 
 					for (int i = start; i < start + 1024; i++) {
@@ -362,9 +365,13 @@ public class Kernel implements Device {
 					/*
 					 * Populate the memory with 0's
 					 */
+
 					int physical_address = vtmp.getPhysical_page_number() * 1024;
+					int index = 0;
 					for (int i = physical_address; i < physical_address + 1024; i++) {
+						data[index] = UserlandProcess.physicalMemory[i];
 						UserlandProcess.physicalMemory[i] = 0;
+						index++;
 					}
 
 
