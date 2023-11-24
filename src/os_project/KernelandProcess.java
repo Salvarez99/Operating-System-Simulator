@@ -16,7 +16,9 @@ public class KernelandProcess {
 	private int[] deviceIds = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 	private String processName;
 	private LinkedList<KernelMessage> messageQueue;
-	private int[] memoryMap = new int[100];
+	//TODO: Change memoryMap to an array of VTPM[100]
+	// private int[] memoryMap = new int[100];
+	private VirtualToMemoryMapping[] memoryMap = new VirtualToMemoryMapping[100]; 
 
 	
 	public KernelandProcess(UserlandProcess up) {
@@ -29,7 +31,7 @@ public class KernelandProcess {
 		this.timeOuts = 0;
 		this.processName = up.getClass().getSimpleName();
 		this.messageQueue = new LinkedList<>();
-		Arrays.fill(this.memoryMap, -1);
+		Arrays.fill(this.memoryMap, null);
 	}
 	
 	public KernelandProcess(UserlandProcess up, Priority priority) {
@@ -42,7 +44,7 @@ public class KernelandProcess {
 		this.timeOuts = 0;
 		this.processName = up.getClass().getSimpleName();
 		this.messageQueue = new LinkedList<>();
-		Arrays.fill(this.memoryMap, -1);
+		Arrays.fill(this.memoryMap, null);
 	}
 	
 	/*
@@ -192,7 +194,7 @@ public class KernelandProcess {
 		return this.messageQueue;
 	}
 	
-	public int[] getMemoryMap() {
+	public VirtualToMemoryMapping[] getMemoryMap() {
 		return memoryMap;
 	}
 }

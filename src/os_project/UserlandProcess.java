@@ -4,7 +4,7 @@ public abstract class UserlandProcess implements Runnable {
 
     private static int[][] TLB = new int[2][2];
 
-    private static byte[] physicalMemory = new byte[(1024 * 1024)];
+    public static byte[] physicalMemory = new byte[(1024 * 1024)];
 
     byte read(int virtualAddress) {
         /*

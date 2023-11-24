@@ -17,7 +17,6 @@ public class Main {
 		// PID 1
 		// OS.startUp(helloworld);
 		OS.startUp(pageProcess);
-
 		// PID 2
 		OS.createProcess(realProgram, Priority.REALTIME);
 		// PID 3

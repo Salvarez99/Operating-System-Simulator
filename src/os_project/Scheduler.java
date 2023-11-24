@@ -7,6 +7,7 @@ import java.time.ZoneId;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.Random;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -474,27 +475,68 @@ public class Scheduler {
 			switchProcess();
 		}
 
-	//old
-		// Check if process has a message
-		// if (!currentMessageQueue.isEmpty()) {
-		// 	// remove from waiting
-		// 	waitingForMessage.remove(getCurrentlyRunning().getThreadPid());
-		// 	return currentMessageQueue.removeFirst();
-		// }
-
-		// removeFromRunnable(getCurrentlyRunning());
-		// waitingForMessage.put(getCurrentlyRunning().getThreadPid(),
-		// getCurrentlyRunning());
-
-		// var temp = currentProcess;
-		// currentProcess = null;
-		// temp.stop();
-
-		// switchProcess();
-
 		waitingForMessage.remove(getCurrentlyRunning().getThreadPid());
 		return currentMessageQueue.removeFirst();
 
-		// return null;
+	}
+
+	public KernelandProcess getRandomProcess(){
+		ArrayList<KernelandProcess> processList = new ArrayList<KernelandProcess>(this.processPids.values());
+		Random rand = new Random();
+		int randIndex;
+		
+		randIndex = rand.nextInt(processList.size());
+		return processList.get(randIndex);
+	}
+
+	public KernelandProcess pageSwap(){
+		//TODO: Implement page swap
+		/*
+		 * Get a random process
+		 * 		Find a virtual page that has physical memory
+		 * 			Write victim page to disk, assigning the new block to the swap file
+		 * 			If they didn't have one already:
+		 * 				Set victims physical page to -1 
+		 * 				Set current process' to victim's old value
+		 * 				
+		 * 				?If we got a new physical page # 
+		 * 					?If data was previously written to disk:
+		 * 						Load old data in
+		 * 						Populate the physical page # 
+		 * 					?If no data was ever written to disk:
+		 * 						populate memory with 0's
+		 * 			Elif:
+		 * 				there is none, select different process until none
+		 */
+
+		KernelandProcess process = getRandomProcess();
+		VirtualToMemoryMapping[] memMap = process.getMemoryMap();
+		byte[] dataArr = new byte[1024];
+		int index = 0;
+
+
+		//Copying data from the physical memory
+		for (int virtual_page_num = 0; virtual_page_num < memMap.length; virtual_page_num++) {
+			int physical_page_number = memMap[virtual_page_num].getPhysical_page_number();
+			if(physical_page_number > -1){
+				for (int i = physical_page_number * 1024; i < i + 1024; i++) {
+					dataArr[index] = UserlandProcess.physicalMemory[i];
+					index++;
+
+				}
+			}
+		}
+		
+		byte[] read_data = OS.Read(OS.getId(), 1024);
+		while(read_data){}
+		
+		OS.Write(OS.getId(), dataArr);
+
+
+
+		
+		
+
+		return null;
 	}
 }

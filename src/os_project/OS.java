@@ -3,14 +3,28 @@ package os_project;
 public class OS {
 
 	private static Kernel kernel;
+	private static int id;
 
 	/*
 	 * Populates kernel with new instance and call createProcess on "init"
 	 */
 	public static void startUp(UserlandProcess init) {
-
+		VFS vfs = kernel.getVfs();
 		OS.kernel = new Kernel();
 		OS.kernel.createProcess(init);
+		//TODO: Implement create swap file
+		/*
+		 * PSEUDO
+		 * 
+		 * Create a file called "swap"
+		 * 		use VFS to create file
+		 * 		must be created / opened on start up
+		 * Need an int to track the page # (next page to write out)?
+		 */
+
+		OS.id = vfs.Open("file swap.txt");
+
+
 	}
 
 	public static int createProcess(UserlandProcess up) {
@@ -82,5 +96,9 @@ public class OS {
 
 	public static void Seek(int id, int to) {
 		kernel.Seek(id, to);
+	}
+
+	public static int getId(){
+		return OS.id;
 	}
 }
