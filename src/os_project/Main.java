@@ -19,18 +19,23 @@ public class Main {
 		OS.startUp(pageProcess);
 		// PID 2
 		OS.createProcess(realProgram, Priority.REALTIME);
-		// PID 3
+		// // PID 3
 		// OS.createProcess(sleepingProcess, Priority.INTERACTIVE);
-		// PID 4
-		OS.createProcess(backgroundProgram, Priority.BACKGROUND);
+		// // PID 4
+		// OS.createProcess(backgroundProgram, Priority.BACKGROUND);
 
-		// OS.createProcess(pageProcess, Priority.INTERACTIVE);
-		// PID 5
+		// // OS.createProcess(pageProcess, Priority.INTERACTIVE);
+		// // PID 5
 		// OS.createProcess(interactiveProgram, Priority.INTERACTIVE);
-		// PID 6
+		// // PID 6
 		// OS.createProcess(pingProcess, Priority.INTERACTIVE);
-		// PID 7
+		// // PID 7
 		// OS.createProcess(pongProcess, Priority.INTERACTIVE);
+
+		// OS.createProcess(helloworld, Priority.INTERACTIVE);
+
+		// OS.createProcess(goodbyeWorld, Priority.INTERACTIVE);
+
 
 	}
 }

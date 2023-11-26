@@ -16,8 +16,6 @@ public class KernelandProcess {
 	private int[] deviceIds = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
 	private String processName;
 	private LinkedList<KernelMessage> messageQueue;
-	//TODO: Change memoryMap to an array of VTPM[100]
-	// private int[] memoryMap = new int[100];
 	private VirtualToMemoryMapping[] memoryMap = new VirtualToMemoryMapping[100]; 
 
 	

@@ -29,4 +29,9 @@ public class VirtualToMemoryMapping {
     public void setOn_disk_page_number(int on_disk_page_number) {
         this.on_disk_page_number = on_disk_page_number;
     }
+
+    @Override
+    public String toString(){
+        return "Physical page number: " + this.physical_page_number + "\t On disk page number: " + this.on_disk_page_number;
+    }
 }

@@ -14,18 +14,19 @@ public class HelloWorld extends UserlandProcess {
 
 		// }
 		// } catch (Exception e) { }
+        int startPtr = OS.allocateMemory(1024*100);
 
-		byte[] bArray = "HelloWorld".getBytes();
+		// byte[] bArray = "HelloWorld".getBytes();
 
-		int id = OS.Open("file data.txt");
-		OS.Write(id, bArray);
-		OS.Seek(id, 5);
-		bArray = OS.Read(id, 5);
-		String s = new String(bArray);
-		System.out.println("Read: " + s);
+		// int id = OS.Open("file data.txt");
+		// OS.Write(id, bArray);
+		// OS.Seek(id, 5);
+		// bArray = OS.Read(id, 5);
+		// String s = new String(bArray);
+		// System.out.println("Read: " + s);
 
-		System.out.println("Simple class name: " + getClass().getSimpleName());
+		// System.out.println("Simple class name: " + getClass().getSimpleName());
 
-		OS.Close(id);
+		// OS.Close(id);
 	}
 }

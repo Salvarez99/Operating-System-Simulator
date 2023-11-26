@@ -153,13 +153,12 @@ public class Kernel implements Device {
 		 * return start virtual address, where we are starting in memoryMap
 		 */
 
-		//TODO: Implement allocate memory 
 		/*
 		 * Create instances of VTPM (One for every page the user is allocating)
-		 * Populate KLP array
+		 * Populate KLP array (MemMap)
 		 * 		If the element is not null (the allocated space is in use)
 		 * 		
-		 * 		Detecting contigouos blocks is based on presence of VTPM in array
+		 * 		Detecting contiguous blocks is based on presence of VTPM in array
 		 */
 		System.out.println("========================Allocating Memory=====================");
 		ArrayList<Integer> availableSpaceIndices = new ArrayList<>();
@@ -186,7 +185,7 @@ public class Kernel implements Device {
 			int contiguousSpace = 0;
 			Integer startVirtualAddress = 0;
 
-			// finding contigouos space in memMap[]
+			// finding contiguous space in memMap[]
 			for (int i = 0; i < memMap.length; i++) {
 
 				if (contiguousSpace < pages_needed) {
@@ -214,15 +213,17 @@ public class Kernel implements Device {
 				int value = availableSpaceIndices.remove(0);
 				VirtualToMemoryMapping vtpm = new VirtualToMemoryMapping();
 				vtpm.setPhysical_page_number(value);
-
-				//ASK if on disk page number is the same as freespace[] entry: elaborate
+				//Allocating new memory, shouldnt be written to disk yet
 				vtpm.setOn_disk_page_number(-1);
+				System.out.println(vtpm);
 
 				freeSpace[value] = false;
 				memMap[contiguousIndicesMemMap.remove(0)] = vtpm;
 			}
 
-			System.out.println("Start Address: " + startVirtualAddress);
+			// System.out.println("Start Address: " + startVirtualAddress);
+			System.out.println("=====================DONE: Allocating Memory==================");
+			System.out.println("Start virtual address: " + startVirtualAddress);
 			return startVirtualAddress;
 		}
 		return -1;
@@ -242,7 +243,6 @@ public class Kernel implements Device {
 		 * return false
 		 */
 
-		//TODO: Implement free memory
 		/*
 		 * Check if the physical page is not -1 before updating the physical memory in
 		 * use
@@ -267,16 +267,38 @@ public class Kernel implements Device {
 		//Freeing occupied indices
 		for (int i = 0; i < end; i++) {
 			if (memMap[i] != null) {
-				int freeSpaceIndex = memMap[i].getPhysical_page_number();
-				freeSpace[freeSpaceIndex] = true;
+				int physicalPageNum = memMap[i].getPhysical_page_number();
+
+				if(physicalPageNum != -1){
+					freeSpace[physicalPageNum] = true;
+
+					int startPhysicalMem = physicalPageNum * 1024;
+					int endPhysicalMem = startPhysicalMem + 1024;
+					// int counter = 0;
+
+					//Freeing physical memory
+					// System.out.println("Starting index: " + (physicalPageNum * 1024));
+					// System.out.println("Ending index: " + ((physicalPageNum * 1024) + 1024));
+
+
+					for (int index = startPhysicalMem; index <endPhysicalMem; index++) {
+						UserlandProcess.physicalMemory[index] = 0;
+						// counter++;
+					}
+
+					// System.out.println("Counter: "+ counter);
+				}
 				memMap[i] = null;
 				occupied--;
 			}
 		}
 
 		System.out.println("Occupied: " + occupied);
-		if (occupied == 0)
+		if (occupied == 0){
+
+			System.out.println("=====================DONE: Freeing Memory====================");
 			return true;
+		}
 
 		return false;
 	}
@@ -295,88 +317,115 @@ public class Kernel implements Device {
 		 * update phys page on TLB to = value at index
 		 * 
 		 */
-
-		//TODO: Implement get mapping
-		/*
-		 * Find memory map entry as before
-		 * If physical page = -1: 
-		 * 		Find physical page in the "in-use" array and assign it 
-		 * Elif none are available:
-		 * 		Do page swap to free one up
-		 */
+		System.out.println("=====================GetMapping()=====================");
 		KernelandProcess currentProcess = Kernel.scheduler.getCurrentlyRunning();
 		VirtualToMemoryMapping[] memMap = currentProcess.getMemoryMap();
 		VirtualToMemoryMapping vtmp = memMap[virtualPageNumber];
+
+		System.out.println("VP: " + virtualPageNumber);
+		System.out.println(vtmp);
 		int physical_page_number = vtmp.getPhysical_page_number();
 
 		Random rand = new Random();
 		int TLB_index = rand.nextInt(2);
 		int[][] TLB = UserlandProcess.getTLB();
-		byte[] data = new byte[1024];
-		int counter = 0;
 
 		TLB[TLB_index][0] = virtualPageNumber;
 		TLB[TLB_index][1] = physical_page_number;
 
-		//I believe I need a loop to keep page swapping
+		int availableSpaces = 0;
+
+
 		if(physical_page_number == -1){
 
-			//Looking for a free page then assigning it to TLB
+			//Looking for a free space in the freeSpace[]
 			for (int i = 0; i < freeSpace.length; i++) {
 
-				if(freeSpace[i] == false){
-					TLB[TLB_index][1] = physical_page_number;
+				//Checking for first available space
+				if(freeSpace[i] == true){
+					physical_page_number = i;
+					vtmp.setPhysical_page_number(physical_page_number);
+					availableSpaces++;
 					break;
-
-				}else
-					counter++;
+				}
 			}
 
-			
-			//No entry was free
-			if(counter == freeSpace.length - 1){
-				/*
-				* Find a random process
-				* Pageswap
-				*/
-				Kernel.scheduler.pageSwap();
+			//Checking to see if no spaces were available
+			if(availableSpaces == 0){
+				//swap
+
+				boolean hasPhysicalPage = false;
+				
+				while(!hasPhysicalPage){
+					KernelandProcess randomProcess = scheduler.getRandomProcess();
+					VirtualToMemoryMapping[] rpMemMap = randomProcess.getMemoryMap();
+					
+					for(int i = 0; i < rpMemMap.length; i++){
+
+						//Checking to see if element has physical page
+						if(rpMemMap[i].getPhysical_page_number() > -1){
+							/*
+							 * write victim page to disk
+							 * assign new block to swap file, if they didnt have one already (check ondiskpagenum)
+							 * set victims physical page num to -1
+							 * current physical page num to victim's old num
+							 */
+
+							int rpPhysicalPageNum = rpMemMap[i].getPhysical_page_number();
+							int rpDiskPageNum = rpMemMap[i].getOn_disk_page_number();
+							byte[] rpPhysicalMemory = new byte[1024];
+							int rpStart = rpPhysicalPageNum * 1024;
+							int index = 0;
+							hasPhysicalPage = true;
+
+
+							//Getting random process' memory to store onto disk
+							for (int j = rpStart; j < (rpStart + 1024); j++) {
+								rpPhysicalMemory[index] = UserlandProcess.physicalMemory[i];
+								index++;
+							}
+							
+							//Check if random process' physical page has dedicated page on disk
+							if(rpMemMap[i].getOn_disk_page_number() > -1){
+								//Writing victim's page to disk
+								OS.Seek(OS.swapId, rpDiskPageNum * 1024);
+								OS.Write(OS.swapId, rpPhysicalMemory);
+
+							}else{
+								//Writing victim's page to disk
+								OS.Seek(OS.swapId, OS.swapPageNum * 1024);
+								OS.Write(OS.swapId, rpPhysicalMemory);
+								rpMemMap[i].setOn_disk_page_number(OS.swapPageNum);
+								OS.swapPageNum++;
+							}
+							
+							vtmp.setPhysical_page_number(rpPhysicalPageNum);
+							rpMemMap[i].setPhysical_page_number(-1);
+							break;
+						}
+					}
+				}
+			}
+		}
+
+		if(physical_page_number > -1){
+
+			int cpStart = physical_page_number * 1024;
+			int cpOnDiskPageNum = vtmp.getOn_disk_page_number();
+
+			if(cpOnDiskPageNum > -1){
+				OS.Seek(OS.swapId, cpOnDiskPageNum * 1024);
+				byte[] readMemory = OS.Read(OS.swapId, 1024);
+				int index = 0;
+
+				for (int j = cpStart; j < cpStart + 1024; j++) {
+					UserlandProcess.physicalMemory[j] = readMemory[index];
+					index++;
+				}
 
 			}else{
-			//An entry was free to use
-				if(vtmp.getOn_disk_page_number() != -1){
-				//data was previously written to disk
-					/*
-					 * load old data in
-					 * Populate the physical page
-					 */
-
-					int start = vtmp.getOn_disk_page_number() * 1024;
-					int index = 0;
-					OS.Seek(OS.getId(), start);
-					data = OS.Read(OS.getId(), 1024);
-					scheduler.getCurrentlyRunning().getMemoryMap()[virtualPageNumber].physical_page_number = vtmp.physical_page_number;
-
-					for (int i = start; i < start + 1024; i++) {
-						UserlandProcess.physicalMemory[i] = data[index];
-						index++;
-					}
-				}else{
-				//data was not previously written to disk
-					/*
-					 * Populate the memory with 0's
-					 */
-
-					int physical_address = vtmp.getPhysical_page_number() * 1024;
-					int index = 0;
-					for (int i = physical_address; i < physical_address + 1024; i++) {
-						data[index] = UserlandProcess.physicalMemory[i];
-						UserlandProcess.physicalMemory[i] = 0;
-						index++;
-					}
-
-
-					
-
+				for (int j = cpStart; j < (cpStart + 1024); j++) {
+					UserlandProcess.physicalMemory[j] = 0;
 				}
 			}
 		}

@@ -266,7 +266,7 @@ public class Scheduler {
 			}
 		}
 		UserlandProcess.setTLB(TLB);
-		UserlandProcess.printTLB();
+		// UserlandProcess.printTLB();
 
 		if (!this.realTimeProcessList.isEmpty()) {
 			// generate random number between 0 and 9
@@ -487,56 +487,5 @@ public class Scheduler {
 		
 		randIndex = rand.nextInt(processList.size());
 		return processList.get(randIndex);
-	}
-
-	public KernelandProcess pageSwap(){
-		//TODO: Implement page swap
-		/*
-		 * Get a random process
-		 * 		Find a virtual page that has physical memory
-		 * 			Write victim page to disk, assigning the new block to the swap file
-		 * 			If they didn't have one already:
-		 * 				Set victims physical page to -1 
-		 * 				Set current process' to victim's old value
-		 * 				
-		 * 				?If we got a new physical page # 
-		 * 					?If data was previously written to disk:
-		 * 						Load old data in
-		 * 						Populate the physical page # 
-		 * 					?If no data was ever written to disk:
-		 * 						populate memory with 0's
-		 * 			Elif:
-		 * 				there is none, select different process until none
-		 */
-
-		KernelandProcess process = getRandomProcess();
-		VirtualToMemoryMapping[] memMap = process.getMemoryMap();
-		byte[] dataArr = new byte[1024];
-		int index = 0;
-
-
-		//Copying data from the physical memory
-		for (int virtual_page_num = 0; virtual_page_num < memMap.length; virtual_page_num++) {
-			int physical_page_number = memMap[virtual_page_num].getPhysical_page_number();
-			if(physical_page_number > -1){
-				for (int i = physical_page_number * 1024; i < i + 1024; i++) {
-					dataArr[index] = UserlandProcess.physicalMemory[i];
-					index++;
-
-				}
-			}
-		}
-		
-		byte[] read_data = OS.Read(OS.getId(), 1024);
-		while(read_data){}
-		
-		OS.Write(OS.getId(), dataArr);
-
-
-
-		
-		
-
-		return null;
 	}
 }
